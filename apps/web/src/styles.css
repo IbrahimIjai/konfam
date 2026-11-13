@@ -1,0 +1,114 @@
+@import "tailwindcss";
+@import "@fontsource-variable/schibsted-grotesk";
+@import "@fontsource-variable/martian-mono";
+
+@theme {
+  --font-sans: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Martian Mono Variable", ui-monospace, SFMono-Regular, monospace;
+
+  --color-paper: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-ink: #0f1f3d;
+  --color-ink-soft: #1d3157;
+  --color-slate: #56657e;
+  --color-mist: #8a97ab;
+  --color-line: #d8dfe9;
+  --color-line-strong: #b9c4d4;
+  --color-stamp: #0b8a5c;
+  --color-stamp-deep: #076946;
+  --color-stamp-soft: #e2f3eb;
+  --color-alert: #c98a06;
+  --color-alert-soft: #fff3d6;
+  --color-danger: #bf3a29;
+  --color-danger-soft: #fbe8e5;
+
+  --color-background: var(--color-paper);
+  --color-foreground: var(--color-ink);
+  --color-primary: var(--color-ink);
+  --color-primary-foreground: var(--color-paper);
+  --color-muted: #edf1f6;
+  --color-muted-foreground: var(--color-slate);
+  --color-border: var(--color-line);
+  --color-ring: #3b5b98;
+
+  --radius-control: 0.625rem;
+  --radius-panel: 0.875rem;
+
+  --animate-stamp-in: stamp-in 420ms cubic-bezier(0.2, 1.4, 0.4, 1) both;
+  --animate-tick-in: tick-in 260ms ease-out both;
+
+  @keyframes stamp-in {
+    0% {
+      opacity: 0;
+      transform: rotate(-14deg) scale(1.6);
+    }
+    100% {
+      opacity: 1;
+      transform: rotate(-8deg) scale(1);
+    }
+  }
+
+  @keyframes tick-in {
+    0% {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-paper text-ink font-sans;
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    background: var(--color-stamp-soft);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@utility receipt-edge {
+  --tooth: 9px;
+  -webkit-mask:
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--tooth) * 2) var(--tooth) repeat-x,
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--tooth)) no-repeat;
+  mask:
+    conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--tooth) * 2) var(--tooth) repeat-x,
+    linear-gradient(#000 0 0) top / 100% calc(100% - var(--tooth)) no-repeat;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
