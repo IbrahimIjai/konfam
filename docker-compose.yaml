@@ -1,0 +1,25 @@
+services:
+  konfam-agent:
+    image: ibrahimijai/konfam-agent:latest
+    platform: linux/amd64
+    container_name: konfam-agent
+    environment:
+      NETWORK_ID: ${NETWORK_ID}
+      AGENT_CONTRACT_ID: ${AGENT_CONTRACT_ID}
+      SPONSOR_ACCOUNT_ID: ${SPONSOR_ACCOUNT_ID}
+      SPONSOR_PRIVATE_KEY: ${SPONSOR_PRIVATE_KEY}
+      BANK_PROVIDER: ${BANK_PROVIDER}
+      MONO_SECRET_KEY: ${MONO_SECRET_KEY}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      CODE_VERSION: ${CODE_VERSION}
+      DATA_DIR: /data
+      PORT: "3001"
+    ports:
+      - 3001:3001
+    volumes:
+      - /var/run/dstack.sock:/var/run/dstack.sock
+      - konfam-data:/data
+    restart: always
+
+volumes:
+  konfam-data:
