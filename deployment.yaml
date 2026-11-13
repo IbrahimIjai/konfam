@@ -3,7 +3,7 @@ network: testnet
 docker_compose_path: ./docker-compose.yaml
 
 agent_contract:
-  contract_id:
+  contract_id: konfam-escrow.married-tape.testnet
   deploy_custom:
     enabled: true
     funding_amount: 8
@@ -26,7 +26,7 @@ agent_contract:
           "requires_tee": <REQUIRES_TEE>,
           "attestation_expiration_time_ms": <7_DAYS>,
           "owner_id": <MASTER_ACCOUNT_ID>,
-          "token_id": "REPLACE_WITH_TOKEN_ACCOUNT",
+          "token_id": "tusdt-married-tape.testnet",
           "token_decimals": 6,
           "fee_bps": 50,
           "fee_recipient": <MASTER_ACCOUNT_ID>,
