@@ -1,0 +1,24 @@
+[package]
+name = "konfam-escrow"
+version = "0.1.0"
+edition = "2024"
+description = "Konfam P2P escrow with TEE-gated payment confirmation"
+license = "Apache-2.0"
+repository = "https://github.com/ibrahimijai/konfam"
+
+[package.metadata.near.reproducible_build]
+image = "sourcescan/cargo-near:0.19.0-rust-1.86.0"
+image_digest = "sha256:772638e343baeeea24e49062c7d424274f3441452cc06ce97fc4e5695b19fecc"
+container_build_command = ["cargo", "near", "build", "non-reproducible-wasm", "--locked", "--no-abi"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+hex = { workspace = true }
+near-sdk = { workspace = true }
+serde = { workspace = true }
+shade-attestation = { workspace = true }
+
+[dev-dependencies]
+near-sdk = { workspace = true, features = ["unit-testing"] }

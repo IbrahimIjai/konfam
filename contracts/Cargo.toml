@@ -1,0 +1,18 @@
+[workspace]
+resolver = "2"
+members = ["escrow", "test-token"]
+
+[workspace.dependencies]
+hex = { version = "=0.4.3", default-features = false, features = ["alloc"] }
+near-sdk = "=5.26.1"
+near-contract-standards = "=5.26.1"
+serde = { version = "=1.0.228", features = ["derive"] }
+shade-attestation = "=0.2.0"
+
+[profile.release]
+codegen-units = 1
+opt-level = "z"
+lto = true
+debug = false
+panic = "abort"
+overflow-checks = true

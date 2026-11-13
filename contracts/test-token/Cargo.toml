@@ -1,0 +1,17 @@
+[package]
+name = "konfam-test-token"
+version = "0.1.0"
+edition = "2024"
+description = "Testnet USDT stand-in with a faucet"
+license = "Apache-2.0"
+repository = "https://github.com/ibrahimijai/konfam"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+near-sdk = { workspace = true }
+near-contract-standards = { workspace = true }
+
+[dev-dependencies]
+near-sdk = { workspace = true, features = ["unit-testing"] }
