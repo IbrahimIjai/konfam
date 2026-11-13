@@ -1,0 +1,12 @@
+Konfam
+Copyright 2026 Sunday Ibrahim Ijai
+
+This product includes software adapted from the Shade Agent Framework
+(https://github.com/NearDeFi/shade-agent-template, https://github.com/NearDeFi/shade-agent-framework),
+Copyright (c) Proximity 2026, licensed under the Apache License, Version 2.0.
+The adapted parts are the agent registration and attestation logic in
+contracts/escrow/src/agents.rs, the owner functions in contracts/escrow/src/owner.rs,
+the event format in contracts/escrow/src/events.rs, and the deployment.yaml layout.
+
+This software has not been independently audited. Do not use it with real funds
+before a security review.

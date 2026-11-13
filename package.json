@@ -1,0 +1,26 @@
+{
+  "name": "konfam",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:agent": "bun run --cwd apps/agent dev",
+    "dev:agent:memory": "bun run --cwd apps/agent dev:memory",
+    "dev:web": "bun run --cwd apps/web dev",
+    "demo": "bun scripts/demo.ts",
+    "test": "bun run test:agent && bun run test:contracts",
+    "test:agent": "bun run --cwd apps/agent test",
+    "test:contracts": "cd contracts && cargo test",
+    "typecheck": "bun run --cwd packages/shared typecheck && bun run --cwd apps/agent typecheck && bun run --cwd apps/web typecheck",
+    "build:web": "bun run --cwd apps/web build"
+  },
+  "overrides": {
+    "@noble/curves": "1.9.7"
+  },
+  "devDependencies": {
+    "@konfam/shared": "workspace:*"
+  }
+}

@@ -1,0 +1,15 @@
+node_modules
+dist
+build
+target
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.vite
+coverage
+agent-data
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
