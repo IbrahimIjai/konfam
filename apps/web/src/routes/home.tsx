@@ -103,10 +103,10 @@ export function HomePage() {
             checks out. No screenshots. No disputes about fake receipts.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/market" className={buttonVariants({ size: "lg", variant: "brand" })}>
+            <Link to="/trade" className={buttonVariants({ size: "lg", variant: "brand" })}>
               Buy USDT
             </Link>
-            <Link to="/sell" className={buttonVariants({ size: "lg", variant: "outline" })}>
+            <Link to="/trade?side=sell" className={buttonVariants({ size: "lg", variant: "outline" })}>
               Sell USDT
             </Link>
           </div>

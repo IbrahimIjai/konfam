@@ -2,7 +2,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { RequireSession } from "@/components/gates";
-import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { config } from "@/config";
 import { MyOffers } from "@/features/sell/my-offers";
@@ -13,7 +12,7 @@ import { useToken } from "@/lib/queries";
 import { errorMessage } from "@/lib/utils";
 import { useWallet } from "@/lib/wallet";
 
-function Faucet() {
+export function Faucet() {
   const { send } = useWallet();
   const token = useToken();
   const queryClient = useQueryClient();
@@ -72,15 +71,10 @@ function SellFlow() {
   );
 }
 
-export function SellPage() {
+export function SellPanel() {
   const { accountId } = useWallet();
   return (
     <div className="grid gap-10">
-      <PageHeader
-        title="Sell USDT for naira"
-        description="Set your price, lock USDT in escrow, and get paid straight into your bank account. You never have to release coins by hand."
-        actions={<Faucet />}
-      />
       <RequireSession>
         <SellFlow />
       </RequireSession>

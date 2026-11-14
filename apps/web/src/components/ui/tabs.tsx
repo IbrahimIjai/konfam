@@ -20,7 +20,7 @@ export function TabsTab({ className, ...props }: ComponentProps<typeof TabsPrimi
   return (
     <TabsPrimitive.Tab
       className={cn(
-        "relative z-10 h-8 rounded-[0.45rem] px-3 text-sm font-medium text-slate transition-colors outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-ring data-[selected]:text-paper",
+        "relative z-10 h-8 rounded-[0.45rem] px-3 text-sm font-medium text-slate transition-colors outline-none hover:text-ink focus-visible:ring-2 focus-visible:ring-ring data-[active]:text-paper",
         className,
       )}
       {...props}

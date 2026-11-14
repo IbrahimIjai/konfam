@@ -1,7 +1,6 @@
 import { formatNaira, formatToken, type OfferView } from "@konfam/shared";
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
-import { PageHeader } from "@/components/page-header";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BuyDialog } from "@/features/market/buy-dialog";
@@ -26,7 +25,7 @@ function SetupBanner() {
   );
 }
 
-export function MarketPage() {
+export function BuyPanel({ onSell }: { onSell: () => void }) {
   const offers = useOffers();
   const token = useToken();
   const { accountId } = useWallet();
@@ -38,17 +37,7 @@ export function MarketPage() {
   );
 
   return (
-    <div className="grid gap-8">
-      <PageHeader
-        title="Buy USDT with a bank transfer"
-        description="Pick a seller and choose how much you want. Pay their bank account, and the USDT lands in your wallet as soon as your transfer is confirmed."
-        actions={
-          <Link to="/sell" className={buttonVariants({ variant: "outline" })}>
-            Sell instead
-          </Link>
-        }
-      />
-
+    <div className="grid gap-6">
       <SetupBanner />
 
       {offers.isLoading ? (
@@ -65,9 +54,9 @@ export function MarketPage() {
         <div className="rounded-panel border border-dashed border-line-strong p-10 text-center">
           <p className="font-semibold">No sellers have USDT listed right now</p>
           <p className="mt-1 text-sm text-slate">List your own USDT and set the price buyers pay.</p>
-          <Link to="/sell" className={buttonVariants({ className: "mt-5" })}>
+          <Button className="mt-5" onClick={onSell}>
             List USDT
-          </Link>
+          </Button>
         </div>
       ) : (
         <div className="overflow-hidden rounded-panel border border-line bg-surface">
