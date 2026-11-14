@@ -84,7 +84,7 @@ export function SettledPanel({ trade }: { trade: TradeView }) {
         ) : (
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="font-semibold">Transfer verified, but the payout didn't go through. Anyone can retry it.</p>
-            <Button variant="stamp" disabled={retry.isPending} onClick={() => retry.mutate()}>
+            <Button variant="brand" disabled={retry.isPending} onClick={() => retry.mutate()}>
               {retry.isPending ? "Confirm in wallet…" : "Retry payout"}
             </Button>
           </div>

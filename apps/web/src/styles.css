@@ -1,22 +1,32 @@
 @import "tailwindcss";
 @import "@fontsource-variable/schibsted-grotesk";
 @import "@fontsource-variable/martian-mono";
+@import "@fontsource-variable/outfit";
 
 @theme {
   --font-sans: "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit Variable", "Schibsted Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Martian Mono Variable", ui-monospace, SFMono-Regular, monospace;
 
-  --color-paper: #f5f7fa;
+  /* Brand greens from the Konfam mark. Use as fills; text on them is ink. */
+  --color-brand: #00c853;
+  --color-brand-bright: #39f54a;
+  --color-brand-deep: #00a844;
+
+  --color-paper: #f5f6f4;
   --color-surface: #ffffff;
-  --color-ink: #0f1f3d;
-  --color-ink-soft: #1d3157;
-  --color-slate: #56657e;
-  --color-mist: #8a97ab;
-  --color-line: #d8dfe9;
-  --color-line-strong: #b9c4d4;
-  --color-stamp: #0b8a5c;
-  --color-stamp-deep: #076946;
-  --color-stamp-soft: #e2f3eb;
+  --color-ink: #0a0d0b;
+  --color-ink-soft: #1f2621;
+  --color-slate: #59635d;
+  --color-mist: #8c958f;
+  /* Muted text on ink surfaces (footer, dark cards). */
+  --color-haze: #a9b2ac;
+  --color-line: #dde2de;
+  --color-line-strong: #bec6c0;
+  /* Darker green for text and icons on light surfaces (WCAG AA on paper). */
+  --color-stamp: #00813a;
+  --color-stamp-deep: #006a2f;
+  --color-stamp-soft: #e1f7e6;
   --color-alert: #c98a06;
   --color-alert-soft: #fff3d6;
   --color-danger: #bf3a29;
@@ -26,10 +36,10 @@
   --color-foreground: var(--color-ink);
   --color-primary: var(--color-ink);
   --color-primary-foreground: var(--color-paper);
-  --color-muted: #edf1f6;
+  --color-muted: #eceeeb;
   --color-muted-foreground: var(--color-slate);
   --color-border: var(--color-line);
-  --color-ring: #3b5b98;
+  --color-ring: var(--color-stamp);
 
   --radius-control: 0.625rem;
   --radius-panel: 0.875rem;
@@ -85,6 +95,7 @@
   h1,
   h2,
   h3 {
+    font-family: var(--font-display);
     text-wrap: balance;
   }
 

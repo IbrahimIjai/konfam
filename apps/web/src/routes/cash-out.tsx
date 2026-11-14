@@ -129,7 +129,7 @@ function CashOutForm() {
           <p className="mt-1 text-[28px] font-semibold tracking-tight">{quote ? quote.quote.amountOutFormatted : "—"}</p>
           {quote ? <p className="mt-1 text-sm text-slate">Arrives in about {Math.max(1, Math.round(quote.quote.timeEstimate))} seconds.</p> : null}
           {live && quote?.quote.depositAddress ? (
-            <Button className="mt-5 w-full" variant="stamp" disabled={execute.isPending} onClick={() => execute.mutate()}>
+            <Button className="mt-5 w-full" variant="brand" disabled={execute.isPending} onClick={() => execute.mutate()}>
               {execute.isPending ? "Confirm in wallet…" : "Send USDT"}
             </Button>
           ) : null}

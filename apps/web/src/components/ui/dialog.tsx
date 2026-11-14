@@ -14,7 +14,7 @@ export function DialogContent({ className, children, ...props }: ComponentProps<
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 gap-5 rounded-panel border border-line bg-surface p-6 shadow-[0_24px_60px_-20px_rgba(15,31,61,0.45)] transition-[opacity,transform] duration-150 outline-none data-[ending-style]:scale-[0.98] data-[ending-style]:opacity-0 data-[starting-style]:scale-[0.98] data-[starting-style]:opacity-0",
+          "fixed top-1/2 left-1/2 z-50 grid w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 gap-5 rounded-panel border border-line bg-surface p-6 shadow-[0_24px_60px_-20px_rgba(10,13,11,0.45)] transition-[opacity,transform] duration-150 outline-none data-[ending-style]:scale-[0.98] data-[ending-style]:opacity-0 data-[starting-style]:scale-[0.98] data-[starting-style]:opacity-0",
           className,
         )}
         {...props}

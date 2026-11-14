@@ -53,7 +53,7 @@ export function Stamp({ label = "Released", className }: { label?: string; class
       )}
       aria-label={`Konfam stamp: ${label}`}
     >
-      <span className="font-sans text-[26px] leading-none font-black tracking-[0.06em]">KONFAM</span>
+      <span className="font-display text-[26px] leading-none font-extrabold tracking-[0.06em]">KONFAM</span>
       <span className="mt-1 font-mono text-[10px] leading-none">{label}</span>
     </div>
   );
@@ -74,7 +74,7 @@ export function Receipt({
   return (
     <figure
       className={cn(
-        "relative w-full max-w-sm bg-surface px-6 pt-6 pb-8 font-mono text-[12px] leading-relaxed text-ink shadow-[0_30px_60px_-30px_rgba(15,31,61,0.45)] receipt-edge",
+        "relative w-full max-w-sm bg-surface px-6 pt-6 pb-8 font-mono text-[12px] leading-relaxed text-ink shadow-[0_30px_60px_-30px_rgba(10,13,11,0.45)] receipt-edge",
         className,
       )}
     >

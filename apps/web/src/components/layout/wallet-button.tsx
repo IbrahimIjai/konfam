@@ -31,7 +31,7 @@ export function WalletButton() {
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner sideOffset={8} align="end" className="z-50">
-          <Menu.Popup className="w-64 rounded-control border border-line bg-surface p-1 shadow-[0_16px_40px_-16px_rgba(15,31,61,0.35)] outline-none transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0">
+          <Menu.Popup className="w-64 rounded-control border border-line bg-surface p-1 shadow-[0_16px_40px_-16px_rgba(10,13,11,0.35)] outline-none transition-opacity data-[ending-style]:opacity-0 data-[starting-style]:opacity-0">
             <div className="px-3 py-2.5">
               <p className="truncate text-sm font-medium">{accountId}</p>
               <p className="text-[13px] text-slate">

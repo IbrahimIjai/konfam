@@ -28,7 +28,7 @@ export function SelectContent({ className, children, ...props }: ComponentProps<
       <SelectPrimitive.Positioner sideOffset={6} className="z-50 outline-none" alignItemWithTrigger={false}>
         <SelectPrimitive.Popup
           className={cn(
-            "max-h-(--available-height) min-w-(--anchor-width) overflow-y-auto rounded-control border border-line bg-surface p-1 shadow-[0_16px_40px_-16px_rgba(15,31,61,0.35)] transition-[opacity,transform] duration-100 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
+            "max-h-(--available-height) min-w-(--anchor-width) overflow-y-auto rounded-control border border-line bg-surface p-1 shadow-[0_16px_40px_-16px_rgba(10,13,11,0.35)] transition-[opacity,transform] duration-100 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
             className,
           )}
           {...props}

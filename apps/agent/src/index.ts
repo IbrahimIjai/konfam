@@ -42,6 +42,8 @@ async function createChain(config: Config): Promise<EscrowChain> {
     agentContractId: config.AGENT_CONTRACT_ID,
     sponsor: { accountId: config.SPONSOR_ACCOUNT_ID, privateKey: config.SPONSOR_PRIVATE_KEY },
     derivationPath: config.SPONSOR_PRIVATE_KEY,
+    // shade-agent-js 2.2.0 rejects local derivation when numKeys is 1 (empty key list compares as "random").
+    numKeys: 2,
   });
   log("agent account", { accountId: shade.accountId() });
   if ((await shade.balance()) < 0.2) await shade.fund(0.3);

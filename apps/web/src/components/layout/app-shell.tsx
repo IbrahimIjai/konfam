@@ -2,16 +2,8 @@ import { Link, NavLink, Outlet, useLocation } from "react-router";
 import { config, isConfigured } from "@/config";
 import { useAttestation, useOpenTrade } from "@/lib/queries";
 import { cn } from "@/lib/utils";
+import { LogoMark, TAGLINE, Wordmark } from "@/components/brand";
 import { WalletButton } from "./wallet-button";
-
-function Mark() {
-  return (
-    <svg viewBox="0 0 32 32" className="size-7" aria-hidden>
-      <rect x="2" y="2" width="28" height="28" rx="7" className="fill-ink" />
-      <path d="M9 16.5l4.5 4.5L23 11.5" fill="none" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" className="stroke-[#3ddc97]" />
-    </svg>
-  );
-}
 
 function NavItem({ to, children }: { to: string; children: string }) {
   return (
@@ -54,9 +46,9 @@ export function AppShell() {
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-40 border-b border-line bg-paper/90 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-6 px-5">
-          <Link to="/" className="flex items-center gap-2.5" aria-label="Konfam home">
-            <Mark />
-            <span className="text-[19px] font-bold tracking-[-0.03em]">konfam</span>
+          <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Konfam home">
+            <LogoMark className="size-8" />
+            <Wordmark className="text-[22px]" />
           </Link>
           <nav className="-mx-1 hidden flex-1 items-center gap-1 overflow-x-auto px-1 md:flex" aria-label="Main">
             <NavItem to="/market">Buy USDT</NavItem>
@@ -95,15 +87,24 @@ export function AppShell() {
       <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-10">
         <Outlet />
       </main>
-      <footer className="border-t border-line">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-6 text-[13px] text-slate sm:flex-row sm:justify-between">
-          <p>Escrow on NEAR. Payment checks run inside a Trusted Execution Environment.</p>
-          <p>
-            Contract{" "}
-            <a className="underline underline-offset-4 hover:text-ink" href={`${config.explorerUrl}/address/${config.contractId}`} target="_blank" rel="noreferrer">
-              {config.contractId || "not set"}
-            </a>
-          </p>
+      <footer className="bg-ink text-white">
+        <div className="mx-auto grid max-w-6xl gap-8 px-5 py-10 sm:grid-cols-[1fr_auto] sm:items-end">
+          <div>
+            <Link to="/" className="inline-flex items-center gap-2.5" aria-label="Konfam home">
+              <LogoMark className="size-10" />
+              <Wordmark className="text-[28px]" />
+            </Link>
+            <p className="mt-3 font-display text-[15px] tracking-[0.04em] text-haze">{TAGLINE}</p>
+          </div>
+          <div className="grid gap-1.5 text-[13px] text-haze sm:text-right">
+            <p>Escrow on NEAR. Payment checks run inside a Trusted Execution Environment.</p>
+            <p className="min-w-0 truncate">
+              Contract{" "}
+              <a className="text-white underline decoration-white/30 underline-offset-4 hover:decoration-brand" href={`${config.explorerUrl}/address/${config.contractId}`} target="_blank" rel="noreferrer">
+                {config.contractId || "not set"}
+              </a>
+            </p>
+          </div>
         </div>
       </footer>
     </div>

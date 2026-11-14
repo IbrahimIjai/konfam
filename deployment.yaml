@@ -6,14 +6,14 @@ agent_contract:
   contract_id: konfam-escrow.married-tape.testnet
   deploy_custom:
     enabled: true
-    funding_amount: 8
+    funding_amount: 10
     delete_key: false
     deploy_from_source:
-      enabled: true
+      enabled: false
       source_path: ./contracts/escrow
       reproducible_build: false
     deploy_from_wasm:
-      enabled: false
+      enabled: true
       wasm_path: ./contracts/target/near/konfam_escrow/konfam_escrow.wasm
     use_global_by_hash:
       enabled: false

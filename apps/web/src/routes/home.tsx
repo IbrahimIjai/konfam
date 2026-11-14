@@ -58,7 +58,7 @@ export function HomePage() {
             checks out. No screenshots. No disputes about fake receipts.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/market" className={buttonVariants({ size: "lg" })}>
+            <Link to="/market" className={buttonVariants({ size: "lg", variant: "brand" })}>
               Buy USDT
             </Link>
             <Link to="/sell" className={buttonVariants({ size: "lg", variant: "outline" })}>
@@ -98,7 +98,7 @@ export function HomePage() {
         <ol className="grid gap-px overflow-hidden rounded-panel border border-line bg-line sm:grid-cols-2">
           {STEPS.map((step, i) => (
             <li key={step.title} className="bg-surface p-6">
-              <span className="grid size-7 place-items-center rounded-full bg-ink text-[13px] font-semibold text-paper">
+              <span className="grid size-7 place-items-center rounded-full bg-brand font-display text-[13px] font-semibold text-ink">
                 {i + 1}
               </span>
               <h3 className="mt-4 font-semibold">{step.title}</h3>

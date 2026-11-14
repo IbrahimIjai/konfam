@@ -1,0 +1,5 @@
+# C code in dependencies (ring, via shade-attestation) is compiled by the system clang.
+# clang 20+ enables bulk-memory and other post-MVP wasm features by default, which the
+# NEAR VM rejects. Pin C code to the MVP feature set so local `cargo near build` works.
+[env]
+CFLAGS_wasm32_unknown_unknown = "-mcpu=mvp"

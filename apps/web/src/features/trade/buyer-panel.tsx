@@ -176,7 +176,7 @@ export function BuyerPanel({
         ) : null}
         <div className="flex flex-wrap gap-3">
           <Button
-            variant="stamp"
+            variant="brand"
             size="lg"
             disabled={verify.isPending}
             onClick={() => {

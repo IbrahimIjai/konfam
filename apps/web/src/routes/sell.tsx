@@ -45,7 +45,7 @@ function Step({ n, title, description, children }: { n: number; title: string; d
   return (
     <section className="grid gap-4 md:grid-cols-[220px_1fr]">
       <div>
-        <span className="grid size-7 place-items-center rounded-full bg-ink text-[13px] font-semibold text-paper">{n}</span>
+        <span className="grid size-7 place-items-center rounded-full bg-brand font-display text-[13px] font-semibold text-ink">{n}</span>
         <h2 className="mt-3 font-semibold">{title}</h2>
         <p className="mt-1 text-sm text-slate">{description}</p>
       </div>

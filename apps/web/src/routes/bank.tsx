@@ -161,7 +161,7 @@ function LinkedCard() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Link to="/market" className={buttonVariants({ variant: "stamp", size: "sm" })}>
+            <Link to="/market" className={buttonVariants({ variant: "brand", size: "sm" })}>
               Buy USDT
             </Link>
             <Button size="sm" variant="ghost" onClick={() => unlink.mutate()}>
