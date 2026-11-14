@@ -41,6 +41,51 @@ const STEPS = [
   },
 ];
 
+const BUILT_WITH = [
+  {
+    name: "Mono",
+    href: "https://mono.co",
+    logo: <img src="/brands/mono.svg" alt="Mono" className="h-6 w-auto" />,
+    role: "Open banking APIs read the buyer's bank account to confirm the naira transfer.",
+  },
+  {
+    name: "NEAR Intents",
+    href: "https://near.org/intents",
+    logo: (
+      <span className="flex items-center gap-2">
+        <img src="/brands/near.svg" alt="" className="size-6" />
+        <span className="text-[19px] font-semibold tracking-tight">NEAR Intents</span>
+      </span>
+    ),
+    role: "The 1Click API lets buyers cash out USDT to Tron, Solana, Base and more in one step.",
+  },
+];
+
+function BuiltWith() {
+  return (
+    <section aria-labelledby="built-with" className="grid gap-5 border-y border-line py-10 md:grid-cols-[auto_1fr] md:items-center md:gap-12">
+      <h2 id="built-with" className="text-[13px] font-semibold tracking-[0.14em] text-slate uppercase">
+        Built with
+      </h2>
+      <ul className="grid gap-4 sm:grid-cols-2">
+        {BUILT_WITH.map((item) => (
+          <li key={item.name}>
+            <a
+              href={item.href}
+              target="_blank"
+              rel="noreferrer"
+              className="flex h-full flex-col gap-3 rounded-panel border border-line bg-surface p-5 transition-colors hover:border-line-strong"
+            >
+              <span className="flex h-8 items-center">{item.logo}</span>
+              <span className="text-sm leading-relaxed text-slate">{item.role}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export function HomePage() {
   const demo = useDemoSequence();
   const info = useContractInfo();
@@ -85,6 +130,8 @@ export function HomePage() {
           />
         </div>
       </section>
+
+      <BuiltWith />
 
       <section aria-labelledby="how" className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
         <div>
