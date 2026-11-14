@@ -19,7 +19,7 @@ function TradeList() {
       <div className="rounded-panel border border-dashed border-line-strong p-10 text-center">
         <p className="font-semibold">No trades yet</p>
         <p className="mt-1 text-sm text-slate">Buy from a seller or list your own USDT to get started.</p>
-        <Link to="/market" className={buttonVariants({ className: "mt-5" })}>
+        <Link to="/trade" className={buttonVariants({ className: "mt-5" })}>
           Browse sellers
         </Link>
       </div>

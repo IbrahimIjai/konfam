@@ -32,7 +32,7 @@ near deploy tusdt-you.testnet contracts/target/near/konfam_test_token.wasm \
   --initArgs '{"name":"Konfam Test USDT","symbol":"USDT","decimals":6}'
 ```
 
-If cargo-near prints a different `.wasm` path, use that one. Anyone can now mint up to 5,000 test USDT per call with `faucet`. The Sell page has a button for it.
+If cargo-near prints a different `.wasm` path, use that one. Anyone can now mint up to 5,000 test USDT per call with `faucet`. The **Sell USDT** tab on the Trade page has a button for it.
 
 ## 3. Escrow contract
 
@@ -95,15 +95,15 @@ Use two wallets, for example two browser profiles.
 As the seller:
 
 1. Open **Test bank** and open an account. Note its account number.
-2. Open **Sell USDT**, connect, sign the message, and press **Get 1,000 test USDT**.
+2. Open **Trade**, switch to the **Sell USDT** tab, connect, sign the message, and press **Get 1,000 test USDT**.
 3. Save your payout account using the test bank details, then lock 500 USDT at a price of 1600.
 
 As the buyer:
 
 1. Open **Profile** and, under **Account you pay from**, open and link a test account.
-2. Open **Buy USDT** and buy 100 USDT from the seller's offer. The wallet asks you to attach a 0.01 NEAR deposit.
-3. On the trade page, press **Pay from the test bank**. The transfer form is filled in, so send it.
-4. Go back to the trade and press **I've sent it, check my bank**.
+2. Open **Trade**, stay on the **Buy USDT** tab and buy 100 USDT from the seller's offer. The wallet asks you to attach a 0.01 NEAR deposit.
+3. On the trade page, press **Pay with the test bank (play money)**. The transfer form is filled in, so send it.
+4. Go back to the trade and press **I've paid**.
 
 The receipt fills in, the trade turns **Released**, 99.5 USDT lands in the buyer's wallet and the 0.01 NEAR deposit comes back. The evidence hash is visible on the trade page and on the explorer.
 

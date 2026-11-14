@@ -51,8 +51,7 @@ export function AppShell() {
             <Wordmark className="text-[22px]" />
           </Link>
           <nav className="-mx-1 hidden flex-1 items-center gap-1 overflow-x-auto px-1 md:flex" aria-label="Main">
-            <NavItem to="/market">Buy USDT</NavItem>
-            <NavItem to="/sell">Sell USDT</NavItem>
+            <NavItem to="/trade">Trade</NavItem>
             <NavItem to="/trades">My trades</NavItem>
             <NavItem to="/profile">Profile</NavItem>
           </nav>
@@ -66,8 +65,7 @@ export function AppShell() {
           </div>
         </div>
         <nav className="flex gap-1 overflow-x-auto border-t border-line px-4 py-2 md:hidden" aria-label="Main mobile">
-          <NavItem to="/market">Buy</NavItem>
-          <NavItem to="/sell">Sell</NavItem>
+          <NavItem to="/trade">Trade</NavItem>
           <NavItem to="/trades">Trades</NavItem>
           <NavItem to="/profile">Profile</NavItem>
         </nav>

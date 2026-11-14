@@ -2,10 +2,15 @@
 
 Peer-to-peer USDT for naira where **the bank transfer is verified by code running in a TEE, and the escrow on NEAR releases the moment the naira lands.**
 
-Built for **NEAR HACKATHON (November 2026)**. Tracks: Real-World Money, Privacy and Private AI, AI Security and Defense.
+Built at **NEAR HACKATHON** (November 2026).
 
-> Demo video: _add your X post link here_
-> Live app: _add your deployment URL here_
+| | |
+| --- | --- |
+| Live app (NEAR testnet, sandbox bank) | https://konfam-near.vercel.app |
+| Demo post on X | _link added once the demo post is published_ |
+| Tracks | Real-World Money (`realworld`), Privacy & Private AI (`privacy`), AI Security & Defense (`security`) |
+| Check every claim | [VERIFY.md](VERIFY.md) |
+| License | Apache-2.0 |
 
 ---
 
@@ -64,7 +69,29 @@ If the buyer never pays, the seller reclaims the USDT after the window plus a gr
 | NEAR Intents 1Click API | `apps/agent/src/routes/intents.ts`, `apps/web/src/routes/cash-out.tsx` | Buyers move their USDT to Tron, Solana, Base and other chains in one transaction. The agent proxies 1Click so the API key and app fee stay server-side. |
 | Named accounts and wallets | `apps/web/src/lib/wallet.tsx` | NEAR Connect (`@hot-labs/near-connect`) for HOT, Meteor, MyNearWallet, Intear and more. |
 
-## Try it in one minute
+## Try it on the live app
+
+The hosted app runs on NEAR testnet with the sandbox bank, so you need no Nigerian bank account and no real money. You need a NEAR testnet wallet (for example MyNearWallet or Meteor) with a little testnet NEAR for gas and the 0.01 NEAR deposit. Use two wallets, for example in two browser profiles, one as the seller and one as the buyer.
+
+As the seller:
+
+1. Open https://konfam-near.vercel.app/trade and switch to the **Sell USDT** tab. Connect your wallet and sign the free login message. You see the two selling steps.
+2. Press **Get 1,000 test USDT**. You see a toast saying 1,000 test USDT were added to your wallet.
+3. Open **Test bank** (footer link), open an account and note its number. Back on the **Sell USDT** tab, press **Save bank account** with it as your payout account. Only a salted hash of it goes on-chain.
+4. Lock 500 USDT at a price of 1,600 and press **Lock USDT and list**. You see the offer under **Your offers**.
+
+As the buyer:
+
+5. Open **Profile** and, under **Account you pay from**, type a name and press **Open and link**. The new test account starts with ₦5,000,000 of play money.
+6. Open **Trade**. On the **Buy USDT** tab you see the seller's offer, cheapest first. Press **Buy**, enter 100 USDT and press **Reserve and pay**; the wallet asks for the 0.01 NEAR deposit. You land on the trade page with a `KFxxxxxx` reference and a 30 minute countdown.
+7. Press **Pay with the test bank (play money)**. The transfer form is filled in with the seller's account, the amount and the reference, so send it.
+8. Return to the trade and press **I've paid**.
+
+You see the receipt fill in check by check (amount, reference, time window, single use), the trade turn **Released**, 99.5 USDT arrive in the buyer's wallet (0.5% fee) and the 0.01 NEAR deposit come back. The evidence hash is shown on the trade page and on the explorer.
+
+Old links still work: `/market` opens the **Buy USDT** tab and `/sell` opens the **Sell USDT** tab.
+
+## Try it locally in one minute
 
 You need [Bun](https://bun.sh) 1.3 or newer. Rust is only needed for the contracts. `contracts/rust-toolchain.toml` pins Rust 1.86 with the wasm target, matching NEAR's reproducible build image, and rustup installs it on first use.
 
@@ -182,6 +209,7 @@ Konfam reads bank data through [Mono](https://mono.co), the open banking provide
 apps/
   agent/            Shade Agent verifier: Hono on Bun, Mono and sandbox banks, NEP-413 auth
   web/              React Router app, shadcn components on Base UI, Tailwind v4
+                    /trade (buy and sell tabs), /trades/:id, /profile, /cash-out, /trust, /test-bank
 contracts/
   escrow/           Escrow and agent registry (Rust, near-sdk 5.26)
   test-token/       Testnet USDT with a faucet
@@ -195,7 +223,7 @@ docker-compose.yaml Phala Cloud service definition
 
 ## Libraries and prior work
 
-Everything in this repository was written during the hackathon. The agent registry and attestation flow in `contracts/escrow/src/agents.rs`, `owner.rs` and `events.rs`, plus the `deployment.yaml` layout, are adapted from NEAR's Apache-2.0 [Shade Agent template](https://github.com/NearDeFi/shade-agent-template). See [NOTICE](NOTICE).
+Everything in this repository was written during the hackathon window (from the announcement on 2026-10-19 to 2026-11-14); the git history starts on 2026-11-13. There is no pre-hackathon baseline and no earlier version on another chain. The agent registry and attestation flow in `contracts/escrow/src/agents.rs`, `owner.rs` and `events.rs`, plus the `deployment.yaml` layout, are adapted from NEAR's Apache-2.0 [Shade Agent template](https://github.com/NearDeFi/shade-agent-template). See [NOTICE](NOTICE).
 
 Main libraries: `near-sdk`, `near-contract-standards`, `shade-attestation`, `@neardefi/shade-agent-js`, `hono`, `zod`, `@noble/curves`, `@noble/hashes`, `@scure/base`, `react`, `react-router`, `@base-ui/react`, `@tanstack/react-query`, `@hot-labs/near-connect`, `@mono.co/connect.js`, `tailwindcss`, `class-variance-authority`, `lucide-react`, `sonner`, and the Schibsted Grotesk and Martian Mono fonts from Fontsource.
 
