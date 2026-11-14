@@ -55,9 +55,6 @@ export function AppShell() {
             <NavItem to="/sell">Sell USDT</NavItem>
             <NavItem to="/trades">My trades</NavItem>
             <NavItem to="/profile">Profile</NavItem>
-            {sandbox ? <NavItem to="/test-bank">Test bank</NavItem> : null}
-            <NavItem to="/cash-out">Cash out</NavItem>
-            <NavItem to="/trust">How it's verified</NavItem>
           </nav>
           <div className="ml-auto flex items-center gap-3">
             {config.networkId === "testnet" ? (
@@ -73,9 +70,6 @@ export function AppShell() {
           <NavItem to="/sell">Sell</NavItem>
           <NavItem to="/trades">Trades</NavItem>
           <NavItem to="/profile">Profile</NavItem>
-          {sandbox ? <NavItem to="/test-bank">Test bank</NavItem> : null}
-          <NavItem to="/cash-out">Cash out</NavItem>
-          <NavItem to="/trust">Verified</NavItem>
         </nav>
       </header>
       <OpenTradeBanner />
@@ -97,7 +91,12 @@ export function AppShell() {
             <p className="mt-3 font-display text-[15px] tracking-[0.04em] text-haze">{TAGLINE}</p>
           </div>
           <div className="grid gap-1.5 text-[13px] text-haze sm:text-right">
-            <p>Escrow on NEAR. Payment checks run inside a Trusted Execution Environment.</p>
+            <nav className="flex flex-wrap gap-x-5 gap-y-1 sm:justify-end" aria-label="Footer">
+              <Link to="/trust" className="text-white hover:text-brand">How payments are verified</Link>
+              <Link to="/cash-out" className="text-white hover:text-brand">Cash out</Link>
+              {sandbox ? <Link to="/test-bank" className="text-white hover:text-brand">Test bank</Link> : null}
+            </nav>
+            <p>USDT is held in an escrow contract on NEAR until the naira transfer is confirmed.</p>
             <p className="min-w-0 truncate">
               Contract{" "}
               <a className="text-white underline decoration-white/30 underline-offset-4 hover:decoration-brand" href={`${config.explorerUrl}/address/${config.contractId}`} target="_blank" rel="noreferrer">

@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatNaira, payeeCommitment, type TradeView, type VerifyResponse } from "@konfam/shared";
 import { ShieldAlertIcon, ShieldCheckIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { CopyField } from "@/components/copy-field";
 import { Countdown } from "@/components/countdown";
@@ -14,7 +14,7 @@ import { config } from "@/config";
 import { agent, type PayeeReveal } from "@/lib/agent";
 import { functionCall } from "@/lib/near";
 import { useAttestation, useLinkedBank, useOffer } from "@/lib/queries";
-import { errorMessage, formatTime } from "@/lib/utils";
+import { errorMessage } from "@/lib/utils";
 import { useWallet } from "@/lib/wallet";
 
 const POLL_MS = 15_000;
@@ -38,14 +38,51 @@ function CommitmentBadge({ payee, expected }: { payee: PayeeReveal; expected: st
   return check.data === expected ? (
     <Badge tone="stamp">
       <ShieldCheckIcon />
-      Matches the account locked on-chain
+      Seller's account checked: it matches their listing
     </Badge>
   ) : (
     <Badge tone="danger">
       <ShieldAlertIcon />
-      Doesn't match the on-chain fingerprint. Don't pay.
+      This account doesn't match the seller's listing. Don't pay.
     </Badge>
   );
+}
+
+function StepHeading({ n, title, children }: { n: number; title: string; children?: React.ReactNode }) {
+  return (
+    <div className="flex gap-3">
+      <span className="grid size-7 shrink-0 place-items-center rounded-full bg-brand font-display text-[13px] font-semibold text-ink">{n}</span>
+      <div>
+        <h2 className="font-semibold">{title}</h2>
+        {children ? <p className="mt-0.5 text-sm text-slate">{children}</p> : null}
+      </div>
+    </div>
+  );
+}
+
+/** Turns failed verification checks into plain instructions the buyer can act on. */
+function hintsFor(result: VerifyResponse | null, trade: TradeView): string[] {
+  if (!result || result.status !== "not_found") return [];
+  const hints = result.checks
+    .filter((check) => check.required && !check.passed)
+    .map((check) => {
+      switch (check.name) {
+        case "bank_activity":
+        case "debit":
+          return "We can't see a transfer from your bank account yet. Make sure you paid from the account in your profile.";
+        case "amount":
+          return `Send exactly ${formatNaira(trade.fiat_kobo)}.`;
+        case "reference":
+          return `Put ${trade.reference} in the narration of your transfer.`;
+        case "timing":
+          return "Send the transfer after reserving the USDT and before the timer runs out.";
+        case "unused":
+          return "That transfer was already used for another trade. Send a new one.";
+        default:
+          return check.detail ?? check.name;
+      }
+    });
+  return [...new Set(hints)];
 }
 
 function PaymentDetails({ trade, onPayee }: { trade: TradeView; onPayee: (payee: PayeeReveal) => void }) {
@@ -58,50 +95,42 @@ function PaymentDetails({ trade, onPayee }: { trade: TradeView; onPayee: (payee:
     if (payee.data) onPayee(payee.data);
   }, [payee.data, onPayee]);
 
-  if (payee.isLoading) return <p className="text-sm text-slate">Fetching the seller's account from the verifier…</p>;
+  if (payee.isLoading) return <p className="text-sm text-slate">Getting the seller's bank details…</p>;
   if (payee.error) return <p className="text-sm text-danger">{errorMessage(payee.error)}</p>;
   if (!payee.data) return null;
   const { details } = payee.data;
   const sandbox = attestation.data?.bankProvider === "sandbox";
+  const testBankLink = `/test-bank?to=${details.accountNumber}&amount=${trade.fiat_kobo}&ref=${trade.reference}&trade=${trade.id}${
+    bank.data?.sandboxAccountId ? `&from=${bank.data.sandboxAccountId}` : ""
+  }`;
   return (
     <div className="grid gap-4">
       <div className="divide-y divide-line rounded-control border border-line bg-surface px-5">
-        <CopyField label="Amount to send" value={(BigInt(trade.fiat_kobo) / 100n).toString() + "." + (BigInt(trade.fiat_kobo) % 100n).toString().padStart(2, "0")} display={formatNaira(trade.fiat_kobo)} emphasis />
-        <CopyField label="Narration or reference" value={trade.reference} emphasis />
+        <CopyField label="Amount" value={(BigInt(trade.fiat_kobo) / 100n).toString() + "." + (BigInt(trade.fiat_kobo) % 100n).toString().padStart(2, "0")} display={formatNaira(trade.fiat_kobo)} emphasis />
+        <CopyField label="Narration (important)" value={trade.reference} emphasis />
         <CopyField label="Account number" value={details.accountNumber} />
         <CopyField label="Account name" value={details.accountName} />
         <CopyField label="Bank" value={details.bankName} />
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <CommitmentBadge payee={payee.data} expected={offer.data?.bank_commitment} />
-        {sandbox ? (
-          <Link
-            className={buttonVariants({ variant: "outline", size: "sm" })}
-            to={`/test-bank?to=${details.accountNumber}&amount=${trade.fiat_kobo}&ref=${trade.reference}${bank.data?.sandboxAccountId ? `&from=${bank.data.sandboxAccountId}` : ""}`}
-          >
-            Pay from the test bank
-          </Link>
-        ) : null}
-      </div>
+      <CommitmentBadge payee={payee.data} expected={offer.data?.bank_commitment} />
       {bank.data ? (
         <p className="text-sm text-slate">
-          Send it from your linked account:{" "}
-          <span className="font-medium text-ink">
-            {bank.data.accountName}, {bank.data.institution} {bank.data.accountNumberMasked}
-          </span>
-          . Transfers from any other account can't be verified.{" "}
-          <Link to="/profile#pay-from" className="underline underline-offset-4">
-            Change
-          </Link>
+          Pay from <span className="font-medium text-ink">{bank.data.accountName}, {bank.data.institution} {bank.data.accountNumberMasked}</span>.
+          Konfam can only see transfers from this account.
         </p>
       ) : bank.isFetched ? (
         <p className="rounded-control border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger">
-          You don't have a bank linked, so the verifier can't see your transfer.{" "}
+          You haven't added the bank account you'll pay from, so Konfam can't see your transfer.{" "}
           <Link to="/profile#pay-from" className="font-semibold underline underline-offset-4">
-            Link the account you'll pay from
-          </Link>{" "}
-          before you send.
+            Add it now
+          </Link>
+          , then come back.
         </p>
+      ) : null}
+      {sandbox ? (
+        <Link className={buttonVariants({ variant: "outline", className: "w-fit" })} to={testBankLink}>
+          Pay with the test bank (play money)
+        </Link>
       ) : null}
     </div>
   );
@@ -116,13 +145,14 @@ export function BuyerPanel({
   onVerify: (result: VerifyResponse) => void;
   onPayee: (payee: PayeeReveal) => void;
 }) {
-  const { authHeader, send } = useWallet();
+  const { authHeader, send, hasSession } = useWallet();
   const queryClient = useQueryClient();
+  const [params, setParams] = useSearchParams();
   const [watching, setWatching] = useState(false);
   const [lastResult, setLastResult] = useState<VerifyResponse | null>(null);
   const [cancelOpen, setCancelOpen] = useState(false);
   const inFlight = useRef(false);
-
+  const autoStarted = useRef(false);
   const verify = useMutation({
     mutationFn: async () => agent.verify(await authHeader(), trade.id),
     onSuccess: async (result) => {
@@ -144,6 +174,25 @@ export function BuyerPanel({
   });
 
   const runVerify = verify.mutate;
+  const startChecking = useCallback(() => {
+    inFlight.current = true;
+    setWatching(true);
+    runVerify();
+  }, [runVerify]);
+
+  // Coming back from the test bank after sending: start checking straight away.
+  useEffect(() => {
+    if (autoStarted.current || params.get("sent") !== "1" || !hasSession) return;
+    autoStarted.current = true;
+    startChecking();
+    setParams(
+      (next) => {
+        next.delete("sent");
+        return next;
+      },
+      { replace: true },
+    );
+  }, [params, hasSession, startChecking, setParams]);
   useEffect(() => {
     if (!watching) return;
     const id = setInterval(() => {
@@ -164,55 +213,50 @@ export function BuyerPanel({
     onError: (error) => toast.error(errorMessage(error)),
   });
 
-  const missing = lastResult?.status === "not_found" ? lastResult.checks.filter((c) => c.required && !c.passed) : [];
+  const hints = hintsFor(lastResult, trade);
 
   return (
     <div className="grid gap-8">
       <div className="flex flex-wrap items-baseline justify-between gap-2 rounded-control bg-alert-soft px-5 py-4">
-        <p className="font-medium">Send the transfer before the timer runs out</p>
+        <p className="font-medium">Time left to pay</p>
         <p className="text-xl font-semibold">
-          <Countdown until={Number(trade.expires_ms)} expiredLabel="Window closed" />
+          <Countdown until={Number(trade.expires_ms)} expiredLabel="Time's up" />
         </p>
       </div>
 
-      <section className="grid gap-3">
-        <h2 className="font-semibold">Pay the seller from your linked bank</h2>
+      <section className="grid gap-4">
+        <StepHeading n={1} title={`Send ${formatNaira(trade.fiat_kobo)} to the seller`}>
+          Use your bank app. Put {trade.reference} in the narration so we can match your payment.
+        </StepHeading>
         <RequireSession>
           <PaymentDetails trade={trade} onPayee={onPayee} />
         </RequireSession>
       </section>
 
-      <section className="grid gap-3">
-        <h2 className="font-semibold">Then let the verifier check</h2>
-        <p className="text-sm text-slate">
-          It reads your linked account for an outgoing transfer of exactly this amount with {trade.reference} in the
-          narration, sent after {formatTime(trade.opened_ms)}.
-        </p>
-        {missing.length > 0 ? (
-          <p className="rounded-control border border-line bg-surface px-4 py-3 text-sm">
-            No matching transfer yet.{" "}
-            {lastResult?.status === "not_found" && lastResult.watching ? "The verifier keeps checking on its own. " : ""}
-            Missing: {missing.map((c) => c.detail ?? c.name).join(", ").toLowerCase()}.
-          </p>
+      <section className="grid gap-4">
+        <StepHeading n={2} title="Tell us you've paid">
+          We'll check your bank and send the USDT to your wallet automatically.
+        </StepHeading>
+        {hints.length > 0 ? (
+          <div className="rounded-control border border-alert/40 bg-alert-soft px-4 py-3 text-sm">
+            <p className="font-medium">We haven't found your payment yet.</p>
+            <ul className="mt-1 list-disc pl-5">
+              {hints.map((hint) => (
+                <li key={hint}>{hint}</li>
+              ))}
+            </ul>
+            {lastResult?.status === "not_found" && lastResult.watching ? <p className="mt-1 text-slate">We'll keep checking.</p> : null}
+          </div>
         ) : null}
         <div className="flex flex-wrap gap-3">
-          <Button
-            variant="brand"
-            size="lg"
-            disabled={verify.isPending}
-            onClick={() => {
-              inFlight.current = true;
-              setWatching(true);
-              verify.mutate();
-            }}
-          >
-            {verify.isPending ? "Checking your bank…" : watching ? "Check again now" : "I've sent it, check my bank"}
+          <Button variant="brand" size="lg" disabled={verify.isPending} onClick={startChecking}>
+            {verify.isPending ? "Checking your bank…" : watching ? "Check again" : "I've paid"}
           </Button>
           <Button variant="ghost" size="lg" onClick={() => setCancelOpen(true)}>
             Cancel trade
           </Button>
         </div>
-        {watching ? <p className="text-[13px] text-slate">Checking every 15 seconds while this page is open.</p> : null}
+        {watching ? <p className="text-[13px] text-slate">Checking every 15 seconds. You can leave this page open.</p> : null}
       </section>
 
       <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>

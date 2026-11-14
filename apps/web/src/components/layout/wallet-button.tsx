@@ -1,11 +1,11 @@
 import { Menu } from "@base-ui/react/menu";
-import { ChevronDownIcon, ExternalLinkIcon, LogOutIcon, UserIcon, WalletIcon } from "lucide-react";
+import { ArrowUpRightIcon, ChevronDownIcon, ExternalLinkIcon, LandmarkIcon, LogOutIcon, UserIcon, WalletIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import { formatToken } from "@konfam/shared";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { explorerAccount } from "@/lib/near";
-import { useToken, useTokenBalance } from "@/lib/queries";
+import { useAttestation, useToken, useTokenBalance } from "@/lib/queries";
 import { errorMessage, shortAccount } from "@/lib/utils";
 import { useWallet } from "@/lib/wallet";
 
@@ -14,6 +14,7 @@ export function WalletButton() {
   const token = useToken();
   const balance = useTokenBalance(accountId);
   const navigate = useNavigate();
+  const sandbox = useAttestation().data?.bankProvider === "sandbox";
 
   if (!accountId) {
     return (
@@ -48,6 +49,22 @@ export function WalletButton() {
               <UserIcon className="size-4 text-slate" />
               Profile and bank accounts
             </Menu.Item>
+            <Menu.Item
+              className="flex cursor-default items-center gap-2 rounded-md px-3 py-2 text-sm outline-none data-[highlighted]:bg-muted"
+              onClick={() => navigate("/cash-out")}
+            >
+              <ArrowUpRightIcon className="size-4 text-slate" />
+              Cash out to another chain
+            </Menu.Item>
+            {sandbox ? (
+              <Menu.Item
+                className="flex cursor-default items-center gap-2 rounded-md px-3 py-2 text-sm outline-none data-[highlighted]:bg-muted"
+                onClick={() => navigate("/test-bank")}
+              >
+                <LandmarkIcon className="size-4 text-slate" />
+                Test bank (play money)
+              </Menu.Item>
+            ) : null}
             <Menu.Item
               className="flex cursor-default items-center gap-2 rounded-md px-3 py-2 text-sm outline-none data-[highlighted]:bg-muted"
               onClick={() => window.open(explorerAccount(accountId), "_blank", "noopener")}

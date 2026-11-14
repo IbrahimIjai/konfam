@@ -27,7 +27,7 @@ function EvidenceDetails({ trade }: { trade: TradeView }) {
       {evidence.data.matchesChain ? (
         <Badge tone="stamp" className="w-fit">
           <ShieldCheckIcon />
-          Verifier's record matches the hash on-chain
+          Konfam's record matches the proof saved on NEAR
         </Badge>
       ) : (
         <Badge tone="danger" className="w-fit">
@@ -64,7 +64,7 @@ export function SettledPanel({ trade }: { trade: TradeView }) {
     return (
       <div className="rounded-control border border-line bg-surface p-5">
         <p className="font-semibold">This trade was cancelled</p>
-        <p className="mt-1 text-sm text-slate">The reserved USDT went back to the seller's offer.</p>
+        <p className="mt-1 text-sm text-slate">No payment was confirmed, so the USDT went back to the seller.</p>
       </div>
     );
   }
@@ -74,16 +74,16 @@ export function SettledPanel({ trade }: { trade: TradeView }) {
       <div className="rounded-control border border-stamp/30 bg-stamp-soft p-5">
         {trade.status === "Released" ? (
           <>
-            <p className="font-semibold text-stamp-deep">{formatToken(net, token.decimals, token.symbol)} released to {trade.buyer}</p>
+            <p className="font-semibold text-stamp-deep">Payment confirmed. {formatToken(net, token.decimals, token.symbol)} sent to {trade.buyer}</p>
             <p className="mt-1 text-sm text-slate">
-              Fee {formatToken(trade.fee, token.decimals, token.symbol)}. Settled {trade.settled_ms ? formatTime(trade.settled_ms) : ""}.
+              Konfam fee {formatToken(trade.fee, token.decimals, token.symbol)}. Completed {trade.settled_ms ? formatTime(trade.settled_ms) : ""}.
             </p>
           </>
         ) : trade.status === "Releasing" ? (
-          <p className="font-semibold text-stamp-deep">Transfer verified. Releasing USDT to the buyer now.</p>
+          <p className="font-semibold text-stamp-deep">Payment confirmed. Sending the USDT now…</p>
         ) : (
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="font-semibold">Transfer verified, but the payout didn't go through. Anyone can retry it.</p>
+            <p className="font-semibold">Payment confirmed, but sending the USDT failed. Try again.</p>
             <Button variant="brand" disabled={retry.isPending} onClick={() => retry.mutate()}>
               {retry.isPending ? "Confirm in wallet…" : "Retry payout"}
             </Button>
@@ -91,8 +91,9 @@ export function SettledPanel({ trade }: { trade: TradeView }) {
         )}
       </div>
 
-      <section className="grid gap-3">
-        <h2 className="font-semibold">Proof of payment</h2>
+      <details className="group rounded-control border border-line bg-surface p-4">
+        <summary className="cursor-pointer text-sm font-medium">Technical proof</summary>
+        <div className="mt-4 grid gap-3">
         <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5 text-sm">
           <dt className="text-slate">Confirmed by</dt>
           <dd className="truncate">
@@ -110,7 +111,8 @@ export function SettledPanel({ trade }: { trade: TradeView }) {
         <RequireSession>
           <EvidenceDetails trade={trade} />
         </RequireSession>
-      </section>
+        </div>
+      </details>
     </div>
   );
 }

@@ -25,24 +25,24 @@ export function SellerPanel({ trade }: { trade: TradeView }) {
   return (
     <div className="grid gap-6">
       <div className="rounded-control border border-line bg-surface p-5">
-        <p className="font-semibold">Waiting for {trade.buyer}'s transfer</p>
+        <p className="font-semibold">Waiting for the buyer to pay you</p>
         <p className="mt-2 text-[15px] text-slate">
-          Expect <span className="font-semibold text-ink">{formatNaira(trade.fiat_kobo)}</span> with{" "}
+          They'll send <span className="font-semibold text-ink">{formatNaira(trade.fiat_kobo)}</span> to your bank with{" "}
           <span className="font-semibold text-ink">{trade.reference}</span> in the narration. You don't need to do
-          anything: the verifier releases the USDT when the transfer shows up in the buyer's bank.
+          anything. Konfam releases the USDT once the payment is confirmed.
         </p>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate">
         <p>
-          Payment window closes in <Countdown until={Number(trade.expires_ms)} expiredLabel="now" />.
+          Time left for the buyer: <Countdown until={Number(trade.expires_ms)} expiredLabel="none" />
         </p>
         {now >= reclaimAt ? (
           <Button variant="outline" disabled={reclaim.isPending} onClick={() => reclaim.mutate()}>
-            {reclaim.isPending ? "Confirm in wallet…" : "Reclaim USDT"}
+            {reclaim.isPending ? "Confirm in your wallet…" : "Take back my USDT"}
           </Button>
         ) : (
           <p>
-            You can reclaim unpaid USDT in <Countdown until={reclaimAt} />.
+            If they don't pay, you can take the USDT back in <Countdown until={reclaimAt} />.
           </p>
         )}
       </div>

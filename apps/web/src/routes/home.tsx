@@ -25,19 +25,19 @@ function useDemoSequence() {
 const STEPS = [
   {
     title: "Seller locks USDT",
-    body: "USDT moves into the escrow contract on NEAR. Their bank details stay with the verifier, and only a fingerprint of them goes on-chain.",
+    body: "The seller's USDT goes into an escrow contract on NEAR, so it can't be moved while a buyer is paying.",
   },
   {
-    title: "Buyer takes an amount",
-    body: "The contract reserves that USDT for 30 minutes and gives the buyer a reference like KF7Q2M9X.",
+    title: "Buyer picks an amount",
+    body: "That USDT is held for the buyer for a few minutes, with a payment reference like KF7Q2M9X.",
   },
   {
     title: "Buyer sends naira",
-    body: "A normal bank transfer to the seller, with the reference in the narration.",
+    body: "A normal bank transfer to the seller from the buyer's own bank app, with the reference in the narration.",
   },
   {
-    title: "Verifier confirms, contract releases",
-    body: "Inside a TEE, the verifier reads the buyer's linked bank account, finds the transfer and tells the contract. USDT goes to the buyer immediately.",
+    title: "Konfam confirms, USDT is released",
+    body: "Konfam checks the buyer's bank for the transfer from inside secure hardware. Once it's there, the USDT goes to the buyer straight away.",
   },
 ];
 

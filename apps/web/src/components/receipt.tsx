@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 
 export const CHECK_LABELS: Record<string, string> = {
   bank_activity: "Outgoing transfer found",
-  debit: "Money left the buyer's bank",
+  debit: "Paid from the buyer's bank",
   amount: "Amount matches the trade",
-  reference: "Reference is in the narration",
-  timing: "Sent inside the payment window",
-  unused: "Transfer not used before",
+  reference: "Reference in the narration",
+  timing: "Sent in time",
+  unused: "Not used for another trade",
   payee: "Seller is named on the transfer",
 };
 
@@ -113,7 +113,7 @@ export function Receipt({
           <li key={check.name} className="flex items-center justify-between gap-3">
             <span className={cn(check.passed === null ? "text-mist" : "text-ink", check.required === false && "text-slate")}>
               {CHECK_LABELS[check.name] ?? check.name}
-              {check.required === false ? " (advisory)" : ""}
+              {check.required === false ? " (optional)" : ""}
             </span>
             <span key={String(check.passed)} className="animate-tick-in">
               <CheckMark passed={check.passed} />
@@ -123,7 +123,7 @@ export function Receipt({
       </ul>
       <div className="mt-5 flex min-h-[76px] items-center justify-between gap-4 border-t border-dashed border-line-strong pt-4">
         <span className="max-w-[9rem] text-[11px] leading-snug text-slate">
-          {stamped ? "Checked inside the Konfam verifier" : "Waiting for the verifier"}
+          {stamped ? "Checked by Konfam" : "Waiting for your transfer"}
         </span>
         {stamped ? <Stamp label={stampLabel} className="-my-2 shrink-0" /> : null}
       </div>

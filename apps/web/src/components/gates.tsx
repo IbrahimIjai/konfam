@@ -39,7 +39,7 @@ export function RequireSession({ children }: { children: ReactNode }) {
       <Notice
         icon={<WalletIcon className="size-5" />}
         title="Connect your NEAR wallet"
-        body="Your wallet is how the verifier knows which bank account and trades are yours."
+        body="Your wallet is your Konfam account. It holds your USDT and shows which trades are yours."
         action={<Button onClick={() => connect().catch((e) => toast.error(errorMessage(e)))}>Connect wallet</Button>}
       />
     );
@@ -48,8 +48,8 @@ export function RequireSession({ children }: { children: ReactNode }) {
   return (
     <Notice
       icon={<KeyRoundIcon className="size-5" />}
-      title="Sign in to the verifier"
-      body="Sign a free message so the verifier can show your private bank details. No transaction, no gas."
+      title="Sign in with your wallet"
+      body="Approve a free sign-in message in your wallet. It's not a transaction and costs nothing."
       action={
         <Button
           disabled={busy}
@@ -64,7 +64,7 @@ export function RequireSession({ children }: { children: ReactNode }) {
             }
           }}
         >
-          {busy ? "Waiting for wallet…" : "Sign message"}
+          {busy ? "Check your wallet…" : "Sign in"}
         </Button>
       }
     />

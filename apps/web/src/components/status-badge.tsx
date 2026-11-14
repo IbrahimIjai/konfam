@@ -2,10 +2,10 @@ import type { OfferStatus, TradeStatus } from "@konfam/shared";
 import { Badge } from "@/components/ui/badge";
 
 const TRADE: Record<TradeStatus, { label: string; tone: "alert" | "stamp" | "neutral" | "danger" | "ink" }> = {
-  AwaitingPayment: { label: "Waiting for transfer", tone: "alert" },
-  Releasing: { label: "Releasing", tone: "ink" },
-  Verified: { label: "Payout retry needed", tone: "danger" },
-  Released: { label: "Released", tone: "stamp" },
+  AwaitingPayment: { label: "Waiting for payment", tone: "alert" },
+  Releasing: { label: "Sending USDT", tone: "ink" },
+  Verified: { label: "Needs retry", tone: "danger" },
+  Released: { label: "Completed", tone: "stamp" },
   Cancelled: { label: "Cancelled", tone: "neutral" },
 };
 

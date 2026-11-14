@@ -29,6 +29,13 @@ export function formatDuration(ms: number): string {
   return `${minutes}:${String(seconds).padStart(2, "0")}`;
 }
 
+/** Human wording for a window length, e.g. "5 minutes" or "1 hour". */
+export function formatMinutes(ms: number): string {
+  const minutes = Math.max(1, Math.round(ms / 60_000));
+  if (minutes % 60 === 0) return minutes === 60 ? "1 hour" : `${minutes / 60} hours`;
+  return minutes === 1 ? "1 minute" : `${minutes} minutes`;
+}
+
 export function formatTime(ms: number | string): string {
   return new Intl.DateTimeFormat("en-NG", { dateStyle: "medium", timeStyle: "short" }).format(new Date(Number(ms)));
 }

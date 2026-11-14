@@ -158,7 +158,7 @@ export function PayFromSection() {
     ) : attestation.data ? (
       <SandboxLink onDone={() => setChanging(false)} linkedId={bank.data?.sandboxAccountId} />
     ) : (
-      <p className="text-sm text-slate">Connecting to the verifier…</p>
+      <p className="text-sm text-slate">Loading…</p>
     );
 
   if (!bank.data) return linker;

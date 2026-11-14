@@ -72,7 +72,7 @@ function ProfileSections() {
       <Section
         id="pay-from"
         title="Account you pay from"
-        description="Used when you buy. The verifier reads this account's outgoing transfers to confirm you paid. Always send from this account."
+        description="Used when you buy. Always pay sellers from this account: it's the only one Konfam checks for your payments."
         status={<Ready ok={bank.isLoading ? undefined : Boolean(bank.data)} yes="Ready to buy" no="Needed to buy" />}
       >
         <PayFromSection />
@@ -80,7 +80,7 @@ function ProfileSections() {
       <Section
         id="receive-in"
         title="Account you receive naira in"
-        description="Used when you sell. Buyers pay into this account. It stays with the verifier, and only its fingerprint goes on-chain with your offers."
+        description="Used when you sell. Buyers pay into this account. It's kept private and only shown to a buyer who is paying you."
         status={<Ready ok={payee.isLoading ? undefined : Boolean(payee.data)} yes="Ready to sell" no="Needed to sell" />}
       >
         <PayeeSection />

@@ -20,7 +20,7 @@ function TradeSummary({ trade, symbol, decimals }: { trade: TradeView; symbol: s
     ["Seller", shortAccount(trade.seller, 16)],
     ["Buyer", shortAccount(trade.buyer, 16)],
     ["Reference", trade.reference],
-    ["Pay by", formatTime(trade.expires_ms)],
+    ["Opened", formatTime(trade.opened_ms)],
   ];
   return (
     <section className="mt-10 grid gap-3">
@@ -84,10 +84,7 @@ export function TradePage() {
           </p>
           <h1 className="mt-1 text-[32px] leading-tight font-semibold tracking-[-0.02em]">Trade #{t.id}</h1>
         </div>
-        <div className="flex items-center gap-3 text-sm text-slate">
-          <span>Opened {formatTime(t.opened_ms)}</span>
-          <TradeStatusBadge status={t.status} />
-        </div>
+        <TradeStatusBadge status={t.status} />
       </div>
 
       <div className="grid gap-12 lg:grid-cols-[1fr_360px]">
@@ -100,10 +97,10 @@ export function TradePage() {
             <SellerPanel trade={t} />
           ) : (
             <p className="rounded-control border border-line bg-surface p-5 text-slate">
-              Connect the buyer's or seller's wallet to act on this trade.
+              This trade belongs to another wallet. Connect the buyer's or seller's wallet to see more.
             </p>
           )}
-          <TradeSummary trade={t} symbol={token.symbol} decimals={token.decimals} />
+          {role === "buyer" && !settled ? null : <TradeSummary trade={t} symbol={token.symbol} decimals={token.decimals} />}
         </div>
         <aside className="lg:sticky lg:top-24 lg:self-start" aria-label="Transfer receipt">
           <Receipt

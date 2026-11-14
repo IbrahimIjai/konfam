@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatNaira, nairaToKobo } from "@konfam/shared";
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +32,8 @@ export function TestBankPage() {
   const [amount, setAmount] = useState(params.get("amount") ? koboToNairaText(params.get("amount")!) : "");
   const [narration, setNarration] = useState(params.get("ref") ?? "");
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const tradeId = params.get("trade");
 
   const account = useQuery({
     queryKey: ["sandbox-account", selected],
@@ -68,8 +70,13 @@ export function TestBankPage() {
         narration,
       }),
     onSuccess: async () => {
-      toast.success("Transfer sent");
       await queryClient.invalidateQueries({ queryKey: ["sandbox-account"] });
+      if (tradeId) {
+        toast.success("Transfer sent. Checking it now…");
+        navigate(`/trades/${tradeId}?sent=1`);
+      } else {
+        toast.success("Transfer sent");
+      }
     },
     onError: (error) => toast.error(errorMessage(error)),
   });
@@ -83,7 +90,7 @@ export function TestBankPage() {
     <div className="grid gap-8">
       <PageHeader
         title="Test bank"
-        description="Play-money bank accounts for trying Konfam without real naira. The verifier reads this bank the same way it reads Mono."
+        description="A pretend bank with play money, so you can try Konfam without real naira. Konfam checks it the same way it checks a real bank."
       />
       <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
         <section className="grid content-start gap-4">
@@ -103,19 +110,19 @@ export function TestBankPage() {
           {notLinked ? (
             <div className="flex flex-col gap-3 rounded-control border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger sm:flex-row sm:items-center sm:justify-between">
               <p>
-                This isn't the account linked to your profile ({linked.data?.accountNumberMasked}). The verifier only reads your linked account, so a
-                transfer from here won't confirm a trade.
+                This isn't the account in your profile ({linked.data?.accountNumberMasked}). Konfam only checks that account, so a transfer from
+                here won't confirm your trade.
               </p>
               <Button size="sm" variant="outline" onClick={() => setSelected(linkedId)}>
-                Use linked account
+                Use my account
               </Button>
             </div>
           ) : null}
           {tradePayment && linked.isFetched && !linked.data ? (
             <p className="rounded-control border border-alert/40 bg-alert-soft px-4 py-3 text-sm">
-              You haven't linked a bank yet, so the verifier can't see this transfer.{" "}
+              You haven't added the bank account you pay from, so Konfam can't see this transfer.{" "}
               <Link to="/profile#pay-from" className="font-semibold underline underline-offset-4">
-                Link one in your profile
+                Add it in your profile
               </Link>{" "}
               first.
             </p>
@@ -124,7 +131,7 @@ export function TestBankPage() {
             <div className="rounded-panel bg-ink p-6 text-paper">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-sm text-paper/70">{account.data.account.bankName}</p>
-                {account.data.account.id === linkedId ? <Badge tone="stamp">Linked to your profile</Badge> : null}
+                {account.data.account.id === linkedId ? <Badge tone="stamp">Your profile's account</Badge> : null}
               </div>
               <p className="mt-1 text-[30px] font-semibold tracking-tight">{formatNaira(account.data.account.balanceKobo)}</p>
               <p className="mt-3 text-sm text-paper/80">
@@ -157,11 +164,11 @@ export function TestBankPage() {
             <Field label="Amount in naira" htmlFor="tb-amount">
               <Input id="tb-amount" required inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} />
             </Field>
-            <Field label="Narration" htmlFor="tb-narration" hint="Put the trade reference here.">
+            <Field label="Narration" htmlFor="tb-narration" hint="Put the trade reference (KF…) here.">
               <Input id="tb-narration" value={narration} onChange={(e) => setNarration(e.target.value)} />
             </Field>
             <Button type="submit" disabled={!selected || transfer.isPending}>
-              {transfer.isPending ? "Sending…" : "Send transfer"}
+              {transfer.isPending ? "Sending…" : tradeId ? "Send and go back to the trade" : "Send transfer"}
             </Button>
           </form>
         </section>
@@ -169,7 +176,7 @@ export function TestBankPage() {
 
       {account.data && account.data.transactions.length > 0 ? (
         <section className="grid gap-3">
-          <h2 className="font-semibold">Alerts</h2>
+          <h2 className="font-semibold">Recent transactions</h2>
           <ul className="divide-y divide-line rounded-panel border border-line bg-surface">
             {account.data.transactions.map((tx) => (
               <li key={tx.id} className="flex items-center justify-between gap-4 px-5 py-3 font-mono text-[12px]">

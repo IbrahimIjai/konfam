@@ -7,7 +7,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { agent, type PayeeReveal } from "@/lib/agent";
-import { errorMessage, shortHash } from "@/lib/utils";
+import { errorMessage } from "@/lib/utils";
 import { useWallet } from "@/lib/wallet";
 
 export function usePayee() {
@@ -39,7 +39,7 @@ export function PayeeSection({ onReady, manageInProfile = false }: { onReady?: (
       await queryClient.invalidateQueries({ queryKey: ["payee"] });
       setEditing(false);
       onReady?.(saved);
-      toast.success("Payout account saved with the verifier");
+      toast.success("Bank account saved");
     } catch (error) {
       toast.error(errorMessage(error));
     } finally {
@@ -47,10 +47,10 @@ export function PayeeSection({ onReady, manageInProfile = false }: { onReady?: (
     }
   };
 
-  if (payee.isLoading) return <p className="text-sm text-slate">Loading your payout account…</p>;
+  if (payee.isLoading) return <p className="text-sm text-slate">Loading your bank account…</p>;
 
   if (payee.data && !editing) {
-    const { details, commitment } = payee.data;
+    const { details } = payee.data;
     return (
       <div className="flex flex-col gap-4 rounded-control border border-line bg-surface p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -58,7 +58,6 @@ export function PayeeSection({ onReady, manageInProfile = false }: { onReady?: (
           <p className="text-sm text-slate">
             {details.bankName}, {maskAccountNumber(details.accountNumber)}
           </p>
-          <p className="mt-1 text-[13px] text-slate">On-chain fingerprint {shortHash(commitment, 8)}</p>
         </div>
         {manageInProfile ? (
           <Link to="/profile" className={buttonVariants({ variant: "outline", size: "sm" })}>
@@ -101,7 +100,7 @@ export function PayeeSection({ onReady, manageInProfile = false }: { onReady?: (
         <Input id="payee-name" required value={form.accountName} onChange={(e) => setForm({ ...form, accountName: e.target.value })} placeholder="Tunde Bakare" />
       </Field>
       <div className="flex items-center justify-between gap-3 sm:col-span-3">
-        <p className="text-[13px] text-slate">Shown only to a buyer with an open trade on your offer. Changing it only applies to offers you create afterwards.</p>
+        <p className="text-[13px] text-slate">Only shown to a buyer who is paying you. Changes apply to new offers.</p>
         <div className="flex gap-2">
           {payee.data ? (
             <Button type="button" variant="ghost" onClick={() => setEditing(false)}>
@@ -109,7 +108,7 @@ export function PayeeSection({ onReady, manageInProfile = false }: { onReady?: (
             </Button>
           ) : null}
           <Button type="submit" disabled={busy}>
-            {busy ? "Saving…" : "Save payout account"}
+            {busy ? "Saving…" : "Save bank account"}
           </Button>
         </div>
       </div>

@@ -11,25 +11,22 @@ import { Input } from "@/components/ui/input";
 import { config } from "@/config";
 import { functionCall, storageDepositIfNeeded, view, type TransactionRequest } from "@/lib/near";
 import { useContractInfo, useLinkedBank, useToken } from "@/lib/queries";
-import { errorMessage } from "@/lib/utils";
+import { errorMessage, formatMinutes } from "@/lib/utils";
 import { useWallet } from "@/lib/wallet";
 
 function LinkedBankCheck() {
   const bank = useLinkedBank();
-  if (bank.isLoading) return <p className="text-sm text-slate">Checking your linked bank…</p>;
+  if (bank.isLoading) return <p className="text-sm text-slate">Checking your bank account…</p>;
   if (!bank.data) {
     return (
       <div className="rounded-control border border-alert/40 bg-alert-soft p-3 text-sm">
-        Link the bank account you'll pay from, so the verifier can see your transfer.{" "}
-        <Link to="/profile#pay-from" className="font-semibold underline underline-offset-4">
-          Link a bank
-        </Link>
+        Add the bank account you'll pay from first, so Konfam can see your transfer.
       </div>
     );
   }
   return (
     <p className="text-sm text-slate">
-      Paying from {bank.data.accountName} at {bank.data.institution}, {bank.data.accountNumberMasked}.
+      You'll pay from <span className="font-medium text-ink">{bank.data.accountName}</span>, {bank.data.institution} {bank.data.accountNumberMasked}.
     </p>
   );
 }
@@ -60,6 +57,7 @@ export function BuyDialog({ offer, open, onOpenChange }: { offer: OfferView; ope
   }, [text, offer, token.decimals, token.symbol]);
 
   const fiat = parsed.amount ? fiatForAmount(parsed.amount, BigInt(offer.rate_kobo), token.decimals) : null;
+  const holdFor = info.data ? formatMinutes(Number(info.data.payment_window_ms)) : "a few minutes";
   const canSubmit = Boolean(accountId && parsed.amount && !parsed.error && bank.data && !busy);
 
   const submit = async () => {
@@ -78,7 +76,7 @@ export function BuyDialog({ offer, open, onOpenChange }: { offer: OfferView; ope
       await send(transactions);
       const trade = await view<TradeView | null>(config.contractId, "get_open_trade", { buyer: accountId });
       await queryClient.invalidateQueries();
-      toast.success("USDT reserved for you");
+      toast.success("USDT reserved. Now send the bank transfer.");
       onOpenChange(false);
       if (trade) navigate(`/trades/${trade.id}`);
       else navigate("/trades");
@@ -93,10 +91,9 @@ export function BuyDialog({ offer, open, onOpenChange }: { offer: OfferView; ope
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Buy from {offer.seller}</DialogTitle>
+          <DialogTitle>Buy {token.symbol} at {formatNaira(offer.rate_kobo)}</DialogTitle>
           <DialogDescription>
-            {formatNaira(offer.rate_kobo)} per {token.symbol}. The USDT is reserved for you for 30 minutes while you
-            make the transfer.
+            From {offer.seller}. We hold the USDT for you for {holdFor} while you send the bank transfer.
           </DialogDescription>
         </DialogHeader>
         <Field
@@ -120,12 +117,12 @@ export function BuyDialog({ offer, open, onOpenChange }: { offer: OfferView; ope
           />
         </Field>
         <div className="flex items-baseline justify-between rounded-control bg-muted px-4 py-3">
-          <span className="text-sm text-slate">You'll transfer</span>
+          <span className="text-sm text-slate">You'll pay</span>
           <span className="text-xl font-semibold tracking-tight">{fiat ? formatNaira(fiat) : "₦0.00"}</span>
         </div>
         <p className="text-[13px] text-slate">
-          Reserving attaches a 0.01 NEAR deposit, returned to you when the USDT is released. It's kept if the trade is
-          cancelled, which stops people from blocking sellers' liquidity for free.
+          Your wallet will ask for a 0.01 NEAR deposit. You get it back when the USDT arrives. It's only kept if you
+          don't pay.
         </p>
         <RequireSession>
           <LinkedBankCheck />
@@ -136,11 +133,11 @@ export function BuyDialog({ offer, open, onOpenChange }: { offer: OfferView; ope
           </Button>
           {bank.data || !accountId ? (
             <Button disabled={!canSubmit} onClick={submit}>
-              {busy ? "Confirm in wallet…" : "Reserve USDT"}
+              {busy ? "Confirm in your wallet…" : "Reserve and pay"}
             </Button>
           ) : (
             <Link to="/profile#pay-from" className={buttonVariants()}>
-              Link a bank first
+              Add bank account
             </Link>
           )}
         </div>

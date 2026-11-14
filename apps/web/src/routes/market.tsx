@@ -5,9 +5,26 @@ import { PageHeader } from "@/components/page-header";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BuyDialog } from "@/features/market/buy-dialog";
-import { useOffers, useToken } from "@/lib/queries";
+import { useLinkedBank, useOffers, useToken } from "@/lib/queries";
 import { shortAccount } from "@/lib/utils";
 import { useWallet } from "@/lib/wallet";
+
+function SetupBanner() {
+  const { hasSession } = useWallet();
+  const bank = useLinkedBank();
+  if (!hasSession || bank.isLoading || bank.data) return null;
+  return (
+    <div className="flex flex-col gap-3 rounded-control border border-alert/40 bg-alert-soft px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p className="font-semibold">One step before you buy</p>
+        <p className="text-sm text-slate">Add the bank account you'll pay from, so Konfam can see your transfer and release your USDT.</p>
+      </div>
+      <Link to="/profile#pay-from" className={buttonVariants({ size: "sm" })}>
+        Add bank account
+      </Link>
+    </div>
+  );
+}
 
 export function MarketPage() {
   const offers = useOffers();
@@ -24,13 +41,15 @@ export function MarketPage() {
     <div className="grid gap-8">
       <PageHeader
         title="Buy USDT with a bank transfer"
-        description="Pick a seller, reserve the amount you need, then pay their bank account. USDT reaches your wallet as soon as the verifier sees your transfer."
+        description="Pick a seller and choose how much you want. Pay their bank account, and the USDT lands in your wallet as soon as your transfer is confirmed."
         actions={
           <Link to="/sell" className={buttonVariants({ variant: "outline" })}>
             Sell instead
           </Link>
         }
       />
+
+      <SetupBanner />
 
       {offers.isLoading ? (
         <div className="grid gap-2">
@@ -40,7 +59,7 @@ export function MarketPage() {
         </div>
       ) : offers.error ? (
         <p className="rounded-panel border border-danger/30 bg-danger-soft p-5 text-sm text-danger">
-          Couldn't load offers from the contract. Check VITE_CONTRACT_ID and VITE_RPC_URL.
+          Couldn't load sellers right now. Refresh the page in a moment.
         </p>
       ) : sorted.length === 0 ? (
         <div className="rounded-panel border border-dashed border-line-strong p-10 text-center">
@@ -59,7 +78,7 @@ export function MarketPage() {
                 <th scope="col" className="px-5 py-3 font-medium">Seller</th>
                 <th scope="col" className="px-5 py-3 font-medium">Price per {token.symbol}</th>
                 <th scope="col" className="hidden px-5 py-3 font-medium sm:table-cell">Available</th>
-                <th scope="col" className="hidden px-5 py-3 font-medium md:table-cell">Per trade</th>
+                <th scope="col" className="hidden px-5 py-3 font-medium md:table-cell">Limits</th>
                 <th scope="col" className="px-5 py-3">
                   <span className="sr-only">Action</span>
                 </th>
@@ -72,12 +91,12 @@ export function MarketPage() {
                   <tr key={offer.id} className="align-middle">
                     <td className="px-5 py-4">
                       <p className="font-medium">{shortAccount(offer.seller, 14)}</p>
-                      <p className="text-[13px] text-slate">Offer #{offer.id}</p>
                     </td>
                     <td className="px-5 py-4 text-[17px] font-semibold tracking-tight">{formatNaira(offer.rate_kobo)}</td>
                     <td className="hidden px-5 py-4 sm:table-cell">{formatToken(offer.available, token.decimals, token.symbol)}</td>
                     <td className="hidden px-5 py-4 text-slate md:table-cell">
-                      {formatToken(offer.min_amount, token.decimals, "")}to {formatToken(offer.max_amount, token.decimals, token.symbol)}
+                      {formatToken(offer.min_amount, token.decimals, "")}to{" "}
+                      {formatToken(BigInt(offer.max_amount) < BigInt(offer.available) ? offer.max_amount : offer.available, token.decimals, token.symbol)}
                     </td>
                     <td className="px-5 py-4 text-right">
                       <Button size="sm" disabled={own} onClick={() => setSelected(offer)}>
