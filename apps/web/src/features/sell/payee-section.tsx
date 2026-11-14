@@ -1,8 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { maskAccountNumber, type PayeeDetails } from "@konfam/shared";
 import { useState, type FormEvent } from "react";
+import { Link } from "react-router";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { agent, type PayeeReveal } from "@/lib/agent";
@@ -18,7 +19,11 @@ export function usePayee() {
   });
 }
 
-export function PayeeSection({ onReady }: { onReady?: (payee: PayeeReveal) => void }) {
+/**
+ * The account buyers pay the seller into. When `manageInProfile` is set, a saved account links to the
+ * profile page for changes instead of editing inline.
+ */
+export function PayeeSection({ onReady, manageInProfile = false }: { onReady?: (payee: PayeeReveal) => void; manageInProfile?: boolean }) {
   const payee = usePayee();
   const { authHeader } = useWallet();
   const queryClient = useQueryClient();
@@ -55,16 +60,22 @@ export function PayeeSection({ onReady }: { onReady?: (payee: PayeeReveal) => vo
           </p>
           <p className="mt-1 text-[13px] text-slate">On-chain fingerprint {shortHash(commitment, 8)}</p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            setForm(details);
-            setEditing(true);
-          }}
-        >
-          Change account
-        </Button>
+        {manageInProfile ? (
+          <Link to="/profile" className={buttonVariants({ variant: "outline", size: "sm" })}>
+            Change in profile
+          </Link>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setForm(details);
+              setEditing(true);
+            }}
+          >
+            Change account
+          </Button>
+        )}
       </div>
     );
   }
@@ -90,7 +101,7 @@ export function PayeeSection({ onReady }: { onReady?: (payee: PayeeReveal) => vo
         <Input id="payee-name" required value={form.accountName} onChange={(e) => setForm({ ...form, accountName: e.target.value })} placeholder="Tunde Bakare" />
       </Field>
       <div className="flex items-center justify-between gap-3 sm:col-span-3">
-        <p className="text-[13px] text-slate">Shown only to a buyer with an open trade on your offer.</p>
+        <p className="text-[13px] text-slate">Shown only to a buyer with an open trade on your offer. Changing it only applies to offers you create afterwards.</p>
         <div className="flex gap-2">
           {payee.data ? (
             <Button type="button" variant="ghost" onClick={() => setEditing(false)}>

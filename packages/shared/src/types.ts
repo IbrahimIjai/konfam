@@ -77,6 +77,8 @@ export interface LinkedBank {
   accountName: string;
   accountNumberMasked: string;
   linkedAt: number;
+  /** Play-money account id, only for the sandbox bank, so the test bank can pay from the linked account. */
+  sandboxAccountId?: string;
 }
 
 export interface VerificationCheck {

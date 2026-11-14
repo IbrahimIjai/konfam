@@ -100,7 +100,7 @@ As the seller:
 
 As the buyer:
 
-1. Open **Bank** and open and link a test account.
+1. Open **Profile** and, under **Account you pay from**, open and link a test account.
 2. Open **Buy USDT** and buy 100 USDT from the seller's offer. The wallet asks you to attach a 0.01 NEAR deposit.
 3. On the trade page, press **Pay from the test bank**. The transfer form is filled in, so send it.
 4. Go back to the trade and press **I've sent it, check my bank**.
@@ -122,4 +122,4 @@ The **How it's verified** page now shows "Running inside a TEE" and "Attestation
 2. Set `BANK_PROVIDER=mono` and `MONO_SECRET_KEY=...` in `.env`, and `VITE_MONO_PUBLIC_KEY=...` in `apps/web/.env`.
 3. Redeploy the agent.
 
-The Bank page now opens Mono Connect instead of the test bank.
+The "Account you pay from" section of the Profile page now opens Mono Connect instead of the test bank.

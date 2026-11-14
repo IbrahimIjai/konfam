@@ -18,6 +18,7 @@ function toLinkedBank(row: BankLinkRow): LinkedBank {
     accountName: row.accountName,
     accountNumberMasked: maskAccountNumber(row.accountNumber),
     linkedAt: row.linkedAt,
+    ...(row.provider === "sandbox" ? { sandboxAccountId: row.providerAccountId } : {}),
   };
 }
 

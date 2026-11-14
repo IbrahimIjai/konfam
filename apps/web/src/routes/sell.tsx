@@ -58,8 +58,8 @@ function SellFlow() {
   const payee = usePayee();
   return (
     <div className="grid gap-12">
-      <Step n={1} title="Where buyers pay you" description="Your bank account stays with the verifier. Only its fingerprint goes on-chain with your offer.">
-        <PayeeSection />
+      <Step n={1} title="Account you receive naira in" description="Buyers pay into this account. It stays with the verifier, and only its fingerprint goes on-chain with your offer.">
+        <PayeeSection manageInProfile />
       </Step>
       <Step n={2} title="Lock USDT for sale" description="USDT stays in escrow until a buyer's transfer is verified, and you can withdraw what isn't reserved at any time.">
         {payee.data ? (

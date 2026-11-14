@@ -1,5 +1,6 @@
 import { Menu } from "@base-ui/react/menu";
-import { ChevronDownIcon, ExternalLinkIcon, LogOutIcon, WalletIcon } from "lucide-react";
+import { ChevronDownIcon, ExternalLinkIcon, LogOutIcon, UserIcon, WalletIcon } from "lucide-react";
+import { useNavigate } from "react-router";
 import { formatToken } from "@konfam/shared";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ export function WalletButton() {
   const { accountId, ready, connect, disconnect } = useWallet();
   const token = useToken();
   const balance = useTokenBalance(accountId);
+  const navigate = useNavigate();
 
   if (!accountId) {
     return (
@@ -39,6 +41,13 @@ export function WalletButton() {
               </p>
             </div>
             <Menu.Separator className="my-1 h-px bg-line" />
+            <Menu.Item
+              className="flex cursor-default items-center gap-2 rounded-md px-3 py-2 text-sm outline-none data-[highlighted]:bg-muted"
+              onClick={() => navigate("/profile")}
+            >
+              <UserIcon className="size-4 text-slate" />
+              Profile and bank accounts
+            </Menu.Item>
             <Menu.Item
               className="flex cursor-default items-center gap-2 rounded-md px-3 py-2 text-sm outline-none data-[highlighted]:bg-muted"
               onClick={() => window.open(explorerAccount(accountId), "_blank", "noopener")}

@@ -1,11 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BuildingIcon } from "lucide-react";
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router";
 import { toast } from "sonner";
-import { RequireSession } from "@/components/gates";
-import { PageHeader } from "@/components/page-header";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { config } from "@/config";
@@ -15,7 +12,7 @@ import { useSandboxAccounts } from "@/lib/sandbox-accounts";
 import { errorMessage, formatTime } from "@/lib/utils";
 import { useWallet } from "@/lib/wallet";
 
-function useLink() {
+function useLink(onDone?: () => void) {
   const { authHeader } = useWallet();
   const queryClient = useQueryClient();
   return useMutation({
@@ -24,13 +21,14 @@ function useLink() {
     onSuccess: async (linked) => {
       toast.success(`${linked.institution} account linked`);
       await queryClient.invalidateQueries({ queryKey: ["linked-bank"] });
+      onDone?.();
     },
     onError: (error) => toast.error(errorMessage(error)),
   });
 }
 
-function MonoLink() {
-  const link = useLink();
+function MonoLink({ onDone }: { onDone?: () => void }) {
+  const link = useLink(onDone);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [opening, setOpening] = useState(false);
@@ -77,8 +75,8 @@ function MonoLink() {
   );
 }
 
-function SandboxLink() {
-  const link = useLink();
+function SandboxLink({ onDone, linkedId }: { onDone?: () => void; linkedId?: string }) {
+  const link = useLink(onDone);
   const { accounts, add } = useSandboxAccounts();
   const [name, setName] = useState("");
   const create = useMutation({
@@ -90,29 +88,33 @@ function SandboxLink() {
     },
     onError: (error) => toast.error(errorMessage(error)),
   });
+  const others = accounts.filter((account) => account.id !== linkedId);
 
   return (
     <div className="grid gap-4">
       <p className="rounded-control border border-alert/40 bg-alert-soft px-4 py-3 text-sm">
-        This verifier runs with the sandbox bank, so you can try the whole flow with play money. In production the same
-        step opens Mono Connect.
+        Testnet uses a play-money bank, so you can try the whole flow without real naira. In production this step opens
+        Mono Connect.
       </p>
-      {accounts.length > 0 ? (
-        <ul className="divide-y divide-line rounded-control border border-line bg-surface">
-          {accounts.map((account) => (
-            <li key={account.id} className="flex items-center justify-between gap-4 px-5 py-3">
-              <div>
-                <p className="font-medium">{account.holderName}</p>
-                <p className="text-[13px] text-slate">
-                  {account.bankName}, {account.accountNumber}
-                </p>
-              </div>
-              <Button size="sm" variant="outline" disabled={link.isPending} onClick={() => link.mutate({ provider: "sandbox", accountId: account.id })}>
-                Link this account
-              </Button>
-            </li>
-          ))}
-        </ul>
+      {others.length > 0 ? (
+        <div className="grid gap-2">
+          <p className="text-[13px] text-slate">Test accounts opened in this browser</p>
+          <ul className="divide-y divide-line rounded-control border border-line bg-surface">
+            {others.map((account) => (
+              <li key={account.id} className="flex items-center justify-between gap-4 px-5 py-3">
+                <div>
+                  <p className="font-medium">{account.holderName}</p>
+                  <p className="text-[13px] text-slate">
+                    {account.bankName}, {account.accountNumber}
+                  </p>
+                </div>
+                <Button size="sm" variant="outline" disabled={link.isPending} onClick={() => link.mutate({ provider: "sandbox", accountId: account.id })}>
+                  Use this account
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
       <form
         className="flex flex-col gap-3 rounded-control border border-line bg-surface p-5 sm:flex-row sm:items-end"
@@ -121,10 +123,10 @@ function SandboxLink() {
           create.mutate();
         }}
       >
-        <Field label="Open a test account" htmlFor="sandbox-name" className="flex-1" hint="Starts with ₦5,000,000 of play money.">
+        <Field label="Open a new test account" htmlFor="sandbox-name" className="flex-1" hint="Starts with ₦5,000,000 of play money.">
           <Input id="sandbox-name" required minLength={3} placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} />
         </Field>
-        <Button type="submit" disabled={create.isPending}>
+        <Button type="submit" disabled={create.isPending || link.isPending}>
           {create.isPending ? "Opening…" : "Open and link"}
         </Button>
       </form>
@@ -132,64 +134,60 @@ function SandboxLink() {
   );
 }
 
-function LinkedCard() {
+/** The bank account the buyer pays from. The verifier reads its outgoing transfers. */
+export function PayFromSection() {
   const bank = useLinkedBank();
+  const attestation = useAttestation();
   const { authHeader } = useWallet();
   const queryClient = useQueryClient();
-  const attestation = useAttestation();
+  const [changing, setChanging] = useState(false);
   const unlink = useMutation({
     mutationFn: async () => agent.unlinkBank(await authHeader()),
     onSuccess: async () => {
       toast.success("Bank unlinked");
       await queryClient.invalidateQueries({ queryKey: ["linked-bank"] });
     },
+    onError: (error) => toast.error(errorMessage(error)),
   });
 
+  if (bank.isLoading) return <p className="text-sm text-slate">Loading your linked bank…</p>;
+
+  const linker =
+    attestation.data?.bankProvider === "mono" ? (
+      <MonoLink onDone={() => setChanging(false)} />
+    ) : attestation.data ? (
+      <SandboxLink onDone={() => setChanging(false)} linkedId={bank.data?.sandboxAccountId} />
+    ) : (
+      <p className="text-sm text-slate">Connecting to the verifier…</p>
+    );
+
+  if (!bank.data) return linker;
+
   return (
-    <div className="grid gap-8">
-      {bank.data ? (
-        <div className="flex flex-col gap-4 rounded-panel border border-stamp/30 bg-stamp-soft p-6 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="grid size-11 place-items-center rounded-full bg-surface text-stamp-deep">
-              <BuildingIcon className="size-5" />
-            </div>
-            <div>
-              <p className="font-semibold">{bank.data.accountName}</p>
-              <p className="text-sm text-slate">
-                {bank.data.institution}, {bank.data.accountNumberMasked}. Linked {formatTime(bank.data.linkedAt)}.
-              </p>
-            </div>
+    <div className="grid gap-4">
+      <div className="flex flex-col gap-4 rounded-control border border-stamp/30 bg-stamp-soft p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          <div className="grid size-11 shrink-0 place-items-center rounded-full bg-surface text-stamp-deep">
+            <BuildingIcon className="size-5" />
           </div>
-          <div className="flex gap-2">
-            <Link to="/market" className={buttonVariants({ variant: "brand", size: "sm" })}>
-              Buy USDT
-            </Link>
-            <Button size="sm" variant="ghost" onClick={() => unlink.mutate()}>
-              Unlink
-            </Button>
+          <div>
+            <p className="font-semibold">{bank.data.accountName}</p>
+            <p className="text-sm text-slate">
+              {bank.data.institution}, {bank.data.accountNumberMasked}
+            </p>
+            <p className="mt-0.5 text-[13px] text-slate">Linked {formatTime(bank.data.linkedAt)}</p>
           </div>
         </div>
-      ) : (
-        <p className="text-[15px] text-slate">No bank linked yet. Link the account you'll send naira from.</p>
-      )}
-      <section className="grid gap-3">
-        <h2 className="font-semibold">{bank.data ? "Link a different account" : "Link your bank"}</h2>
-        {attestation.data?.bankProvider === "mono" ? <MonoLink /> : attestation.data ? <SandboxLink /> : <p className="text-sm text-slate">Connecting to the verifier…</p>}
-      </section>
-    </div>
-  );
-}
-
-export function BankPage() {
-  return (
-    <div className="grid gap-8">
-      <PageHeader
-        title="Your bank link"
-        description="The verifier reads outgoing transfers from this account to confirm your payments. The link lives inside the verifier's secure hardware and never goes on-chain."
-      />
-      <RequireSession>
-        <LinkedCard />
-      </RequireSession>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={() => setChanging((value) => !value)}>
+            {changing ? "Keep this account" : "Change account"}
+          </Button>
+          <Button size="sm" variant="ghost" disabled={unlink.isPending} onClick={() => unlink.mutate()}>
+            Unlink
+          </Button>
+        </div>
+      </div>
+      {changing ? linker : null}
     </div>
   );
 }

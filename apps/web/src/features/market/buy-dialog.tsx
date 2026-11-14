@@ -21,7 +21,7 @@ function LinkedBankCheck() {
     return (
       <div className="rounded-control border border-alert/40 bg-alert-soft p-3 text-sm">
         Link the bank account you'll pay from, so the verifier can see your transfer.{" "}
-        <Link to="/bank" className="font-semibold underline underline-offset-4">
+        <Link to="/profile#pay-from" className="font-semibold underline underline-offset-4">
           Link a bank
         </Link>
       </div>
@@ -139,7 +139,7 @@ export function BuyDialog({ offer, open, onOpenChange }: { offer: OfferView; ope
               {busy ? "Confirm in wallet…" : "Reserve USDT"}
             </Button>
           ) : (
-            <Link to="/bank" className={buttonVariants()}>
+            <Link to="/profile#pay-from" className={buttonVariants()}>
               Link a bank first
             </Link>
           )}

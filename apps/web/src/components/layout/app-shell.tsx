@@ -54,7 +54,7 @@ export function AppShell() {
             <NavItem to="/market">Buy USDT</NavItem>
             <NavItem to="/sell">Sell USDT</NavItem>
             <NavItem to="/trades">My trades</NavItem>
-            <NavItem to="/bank">Bank</NavItem>
+            <NavItem to="/profile">Profile</NavItem>
             {sandbox ? <NavItem to="/test-bank">Test bank</NavItem> : null}
             <NavItem to="/cash-out">Cash out</NavItem>
             <NavItem to="/trust">How it's verified</NavItem>
@@ -72,7 +72,7 @@ export function AppShell() {
           <NavItem to="/market">Buy</NavItem>
           <NavItem to="/sell">Sell</NavItem>
           <NavItem to="/trades">Trades</NavItem>
-          <NavItem to="/bank">Bank</NavItem>
+          <NavItem to="/profile">Profile</NavItem>
           {sandbox ? <NavItem to="/test-bank">Test bank</NavItem> : null}
           <NavItem to="/cash-out">Cash out</NavItem>
           <NavItem to="/trust">Verified</NavItem>

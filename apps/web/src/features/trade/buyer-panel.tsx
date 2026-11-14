@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { config } from "@/config";
 import { agent, type PayeeReveal } from "@/lib/agent";
 import { functionCall } from "@/lib/near";
-import { useAttestation, useOffer } from "@/lib/queries";
+import { useAttestation, useLinkedBank, useOffer } from "@/lib/queries";
 import { errorMessage, formatTime } from "@/lib/utils";
 import { useWallet } from "@/lib/wallet";
 
@@ -52,6 +52,7 @@ function PaymentDetails({ trade, onPayee }: { trade: TradeView; onPayee: (payee:
   const payee = usePayeeReveal(trade);
   const offer = useOffer(trade.offer_id);
   const attestation = useAttestation();
+  const bank = useLinkedBank();
 
   useEffect(() => {
     if (payee.data) onPayee(payee.data);
@@ -76,12 +77,32 @@ function PaymentDetails({ trade, onPayee }: { trade: TradeView; onPayee: (payee:
         {sandbox ? (
           <Link
             className={buttonVariants({ variant: "outline", size: "sm" })}
-            to={`/test-bank?to=${details.accountNumber}&amount=${trade.fiat_kobo}&ref=${trade.reference}`}
+            to={`/test-bank?to=${details.accountNumber}&amount=${trade.fiat_kobo}&ref=${trade.reference}${bank.data?.sandboxAccountId ? `&from=${bank.data.sandboxAccountId}` : ""}`}
           >
             Pay from the test bank
           </Link>
         ) : null}
       </div>
+      {bank.data ? (
+        <p className="text-sm text-slate">
+          Send it from your linked account:{" "}
+          <span className="font-medium text-ink">
+            {bank.data.accountName}, {bank.data.institution} {bank.data.accountNumberMasked}
+          </span>
+          . Transfers from any other account can't be verified.{" "}
+          <Link to="/profile#pay-from" className="underline underline-offset-4">
+            Change
+          </Link>
+        </p>
+      ) : bank.isFetched ? (
+        <p className="rounded-control border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger">
+          You don't have a bank linked, so the verifier can't see your transfer.{" "}
+          <Link to="/profile#pay-from" className="font-semibold underline underline-offset-4">
+            Link the account you'll pay from
+          </Link>{" "}
+          before you send.
+        </p>
+      ) : null}
     </div>
   );
 }

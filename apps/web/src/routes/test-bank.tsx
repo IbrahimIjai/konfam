@@ -1,14 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { formatNaira, nairaToKobo } from "@konfam/shared";
 import { useEffect, useState, type FormEvent } from "react";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 import { agent } from "@/lib/agent";
+import { useLinkedBank } from "@/lib/queries";
 import { useSandboxAccounts } from "@/lib/sandbox-accounts";
 import { cn, errorMessage, formatTime } from "@/lib/utils";
 
@@ -20,16 +22,16 @@ function koboToNairaText(kobo: string): string {
 export function TestBankPage() {
   const [params] = useSearchParams();
   const { accounts, add } = useSandboxAccounts();
-  const [selected, setSelected] = useState<string | null>(accounts[0]?.id ?? null);
+  const linked = useLinkedBank();
+  const linkedId = linked.data?.sandboxAccountId ?? null;
+  const [chosen, setChosen] = useState<string | null>(params.get("from"));
+  const selected = chosen ?? linkedId ?? accounts[0]?.id ?? null;
+  const setSelected = setChosen;
   const [name, setName] = useState("");
   const [to, setTo] = useState(params.get("to") ?? "");
   const [amount, setAmount] = useState(params.get("amount") ? koboToNairaText(params.get("amount")!) : "");
   const [narration, setNarration] = useState(params.get("ref") ?? "");
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (!selected && accounts[0]) setSelected(accounts[0].id);
-  }, [accounts, selected]);
 
   const account = useQuery({
     queryKey: ["sandbox-account", selected],
@@ -37,6 +39,15 @@ export function TestBankPage() {
     enabled: Boolean(selected),
     refetchInterval: 10_000,
   });
+
+  // The linked account may have been opened in another browser. Remember it here so it shows in the list.
+  useEffect(() => {
+    const opened = account.data?.account;
+    if (opened && !accounts.some((a) => a.id === opened.id)) add(opened);
+  }, [account.data, accounts, add]);
+
+  const notLinked = Boolean(linkedId && selected && selected !== linkedId);
+  const tradePayment = Boolean(params.get("ref"));
 
   const create = useMutation({
     mutationFn: () => agent.sandboxCreate(name),
@@ -89,9 +100,32 @@ export function TestBankPage() {
               </SelectContent>
             </Select>
           ) : null}
+          {notLinked ? (
+            <div className="flex flex-col gap-3 rounded-control border border-danger/30 bg-danger-soft px-4 py-3 text-sm text-danger sm:flex-row sm:items-center sm:justify-between">
+              <p>
+                This isn't the account linked to your profile ({linked.data?.accountNumberMasked}). The verifier only reads your linked account, so a
+                transfer from here won't confirm a trade.
+              </p>
+              <Button size="sm" variant="outline" onClick={() => setSelected(linkedId)}>
+                Use linked account
+              </Button>
+            </div>
+          ) : null}
+          {tradePayment && linked.isFetched && !linked.data ? (
+            <p className="rounded-control border border-alert/40 bg-alert-soft px-4 py-3 text-sm">
+              You haven't linked a bank yet, so the verifier can't see this transfer.{" "}
+              <Link to="/profile#pay-from" className="font-semibold underline underline-offset-4">
+                Link one in your profile
+              </Link>{" "}
+              first.
+            </p>
+          ) : null}
           {account.data ? (
             <div className="rounded-panel bg-ink p-6 text-paper">
-              <p className="text-sm text-paper/70">{account.data.account.bankName}</p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm text-paper/70">{account.data.account.bankName}</p>
+                {account.data.account.id === linkedId ? <Badge tone="stamp">Linked to your profile</Badge> : null}
+              </div>
               <p className="mt-1 text-[30px] font-semibold tracking-tight">{formatNaira(account.data.account.balanceKobo)}</p>
               <p className="mt-3 text-sm text-paper/80">
                 {account.data.account.holderName}, {account.data.account.accountNumber}
