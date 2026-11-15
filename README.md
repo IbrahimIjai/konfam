@@ -4,7 +4,8 @@ Peer-to-peer USDT for naira where **the bank transfer is verified by code runnin
 
 Built for **NEAR HACKATHON (November 2026)**. Tracks: Real-World Money, Privacy and Private AI, AI Security and Defense.
 
-> Demo video: _[(https://x.com/Hadassahayeni/status/2121751756363182310?a=tb1BseoLXcIkRDlR4mw&s=20)]_
+> Demo video: _[(https://x.com/Hadassahayeni/status/2121751756363182310?a=tb1BseoLXcIkRDlR4mw&s=20)]_ 
+
 > Live app: _[(https://konfam-near.vercel.app/)]_
 
 ---
